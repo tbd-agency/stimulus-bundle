@@ -27,7 +27,10 @@
         "main": "src/closeable_controller.js",
         "name": "closeable",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": true,
+        "autoimport": {
+          "@tbd/stimulus-bundle/styles/closeable.css": true
+        }
       },
       "confirm": {
         "main": "src/confirm_controller.js",
