@@ -15,6 +15,6 @@ export default class extends Controller {
     }
 
     close() {
-        this.element.remove()
+        this.element.classList.replace('opacity-100', 'opacity-0-hidden')
     }
 }

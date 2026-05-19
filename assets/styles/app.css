@@ -1,0 +1,4 @@
+.opacity-0-hidden {
+    opacity: 0;
+    transition: opacity 1.5s ease;
+}
