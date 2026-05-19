@@ -1,0 +1,20 @@
+{
+  "name": "stimulus-bundle",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tbd-agency/stimulus-bundle.git"
+  },
+  "private": true,
+  "author": "tbd",
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "js-cookie": "^3.0.5",
+    "chart.js": "^3.4.1 || ^4.0"
+  }
+}

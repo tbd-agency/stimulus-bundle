@@ -1,0 +1,151 @@
+{
+  "name": "@tbd/stimulus-bundle",
+  "description": "Stimulus controllers used in TBD projects",
+  "license": "MIT",
+  "version": "1.0.0",
+  "symfony": {
+    "controllers": {
+      "ajax-submit": {
+        "main": "src/ajax_submit_controller.js",
+        "name": "ajax-submit",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "app": {
+        "main": "src/app_controller.js",
+        "name": "app",
+        "fetch": "eager",
+        "enabled": true
+      },
+      "chart": {
+        "main": "src/chart_controller.js",
+        "name": "chart",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "closeable": {
+        "main": "src/closeable_controller.js",
+        "name": "closeable",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "confirm": {
+        "main": "src/confirm_controller.js",
+        "name": "confirm",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "dashboard": {
+        "main": "src/dashboard_controller.js",
+        "name": "dashboard",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "delete": {
+        "main": "src/delete_controller.js",
+        "name": "delete",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "dropdown": {
+        "main": "src/dropdown_controller.js",
+        "name": "dropdown",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "flatpickr": {
+        "main": "src/flatpickr_controller.js",
+        "name": "flatpickr",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "inline-edit": {
+        "main": "src/inline_edit_controller.js",
+        "name": "inline-edit",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "marker": {
+        "main": "src/marker_controller.js",
+        "name": "marker",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "modal": {
+        "main": "src/modal_controller.js",
+        "name": "modal",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "reset-search": {
+        "main": "src/reset_search_controller.js",
+        "name": "reset-search",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "select-items": {
+        "main": "src/select_items_controller.js",
+        "name": "select-items",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "sidebar": {
+        "main": "src/sidebar_controller.js",
+        "name": "sidebar",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "sortable": {
+        "main": "src/sortable_controller.js",
+        "name": "sortable",
+        "fetch": "eager",
+        "enabled": true
+      },
+      "theme": {
+        "main": "src/theme_controller.js",
+        "name": "theme",
+        "fetch": "eager",
+        "enabled": true
+      },
+      "url": {
+        "main": "src/url_controller.js",
+        "name": "url",
+        "fetch": "lazy",
+        "enabled": true
+      }
+    },
+    "importmap": {
+      "@hotwired/stimulus": "^3.2.2",
+      "@hotwired/turbo": "^7.3.0 || ^8.0.0",
+      "chart.js/auto": "^3.4.1 || ^4.0.0",
+      "js-cookie": "^3.0.5",
+      "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
+      "@popperjs/core": "^2.11.8",
+      "flatpickr": "^4.6.13",
+      "sortablejs": "^1.15.0",
+      "@symfony/ux-live-component": "^2.0.0"
+    }
+  },
+  "dependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo": "^7.3.0 || ^8.0.0",
+    "chart.js": "^3.4.1 || ^4.0.0",
+    "js-cookie": "^3.0.5",
+    "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
+    "@popperjs/core": "^2.11.8",
+    "flatpickr": "^4.6.13",
+    "sortablejs": "^1.15.0",
+    "@symfony/ux-live-component": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "@hotwired/turbo": "^7.3.0 || ^8.0.0",
+    "chart.js": "^3.4.1 || ^4.0.0",
+    "js-cookie": "^3.0.5",
+    "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
+    "@popperjs/core": "^2.11.8",
+    "flatpickr": "^4.6.13",
+    "sortablejs": "^1.15.0",
+    "@symfony/ux-live-component": "^2.0.0"
+  }
+}
