@@ -114,7 +114,10 @@
         "main": "src/url_controller.js",
         "name": "url",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": true,
+        "autoimport": {
+          "@tbd/stimulus-bundle/styles/url.css": true
+        }
       }
     },
     "importmap": {
