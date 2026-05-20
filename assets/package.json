@@ -54,7 +54,10 @@
         "main": "src/flatpickr_controller.js",
         "name": "flatpickr",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": true,
+        "autoimport": {
+          "@tbd/stimulus-bundle/styles/flatpickr.css": true
+        }
       },
       "inline-edit": {
         "main": "src/inline_edit_controller.js",
