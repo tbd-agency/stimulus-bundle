@@ -38,12 +38,12 @@ export default class extends Controller {
             frame.setAttribute('src', srcValue)
             frame.loaded.then(function () {
                 modal.updateOnShow(function () {
-                    let autofocus = frame.querySelector('[autofocus]:not([readonly])')
-                    if (autofocus) autofocus.focus()
-
                     if (modal._backdropEl) {
                         target.parentNode.insertBefore(modal._backdropEl, target)
                     }
+
+                    let autofocus = frame.querySelector('[autofocus]:not([readonly])')
+                    if (autofocus) autofocus.focus()
                 })
 
                 modal.show()
@@ -60,11 +60,12 @@ export default class extends Controller {
     }
 
     connect() {
-        document.addEventListener('close:modal', this.close.bind(this))
+        this.boundClose = this.close.bind(this)
+        document.addEventListener('close:modal', this.boundClose)
     }
 
     disconnect() {
-        document.removeEventListener('close:modal', this.close.bind(this))
+        document.removeEventListener('close:modal', this.boundClose)
     }
 
     open(event) {
@@ -80,13 +81,16 @@ export default class extends Controller {
 
         let modal = FlowbiteInstances.getInstance('Modal', targetValue)
         if (modal && !document.body.contains(modal._targetEl)) {
+            FlowbiteInstances.removeInstance('Modal', targetValue)
+            modal = null
+        }
+
+        if (!modal) {
             let options = {
                 backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-[50]',
             }
 
-            FlowbiteInstances.removeInstance('Modal', targetValue)
             modal = new Modal(target, options)
-
             modal.updateOnShow(function () {
                 if (modal._backdropEl) {
                     target.parentNode.insertBefore(modal._backdropEl, target)
@@ -104,9 +108,12 @@ export default class extends Controller {
         let modal = FlowbiteInstances.getInstance('Modal', targetValue)
 
         if (modal && !document.body.contains(modal._targetEl)) {
-            const target = document.getElementById(targetValue)
             FlowbiteInstances.removeInstance('Modal', targetValue)
+            modal = null
+        }
 
+        if (!modal) {
+            const target = document.getElementById(targetValue)
             modal = new Modal(target)
         }
 
