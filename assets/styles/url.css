@@ -1,3 +1,5 @@
+@reference "tailwindcss"
+
 tr[data-url-location] {
     @apply hover:bg-gray-100 dark:hover:text-white dark:hover:bg-gray-900;
 }
