@@ -4,11 +4,11 @@ import {Controller} from '@hotwired/stimulus'
 export default class extends Controller {
     setSrc(event) {
         const trigger = event?.currentTarget
-        const targetValue = trigger?.dataset?.modalTarget
-        const sizeValue = trigger?.dataset?.modalSize ?? 'md'
-        const titleValue = trigger?.dataset?.modalTitle
-        const srcValue = trigger?.dataset?.modalSrc
-        const frameValue = trigger?.dataset?.modalFrame ?? 'source-frame'
+        const targetValue = trigger?.dataset?.target
+        const sizeValue = trigger?.dataset?.size ?? 'md'
+        const titleValue = trigger?.dataset?.title
+        const srcValue = trigger?.dataset?.src
+        const frameValue = trigger?.dataset?.frame ?? 'source-frame'
 
         let target = document.getElementById(targetValue)
         let options = {
@@ -60,18 +60,17 @@ export default class extends Controller {
     }
 
     connect() {
-        this.boundClose = this.close.bind(this)
-        document.addEventListener('close:modal', this.boundClose)
+        document.addEventListener('close:modal', this.close.bind(this))
     }
 
     disconnect() {
-        document.removeEventListener('close:modal', this.boundClose)
+        document.removeEventListener('close:modal', this.close.bind(this))
     }
 
     open(event) {
         const trigger = event?.currentTarget
-        const targetValue = trigger?.dataset?.modalTarget
-        const actionValue = trigger?.dataset?.modalAction
+        const targetValue = trigger?.dataset?.target
+        const actionValue = trigger?.dataset?.formAction
         let target = document.getElementById(targetValue)
 
         if (target && actionValue) {
@@ -104,7 +103,7 @@ export default class extends Controller {
     }
 
     close(event) {
-        const targetValue = event?.detail?.target ?? event?.currentTarget?.dataset?.modalTarget
+        const targetValue = event?.detail?.target ?? event?.currentTarget?.dataset?.target
         let modal = FlowbiteInstances.getInstance('Modal', targetValue)
 
         if (modal && !document.body.contains(modal._targetEl)) {
