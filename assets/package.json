@@ -44,12 +44,6 @@
         "fetch": "lazy",
         "enabled": true
       },
-      "delete": {
-        "main": "src/delete_controller.js",
-        "name": "delete",
-        "fetch": "lazy",
-        "enabled": true
-      },
       "dropdown": {
         "main": "src/dropdown_controller.js",
         "name": "dropdown",
