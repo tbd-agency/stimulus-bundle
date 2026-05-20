@@ -8,8 +8,8 @@ export default class extends Controller {
         target: String,
         trigger: String,
         placement: String,
-        offsetSkidding: Number,
-        offsetDistance: Number,
+        offsetSkidding: {Number, default: 0},
+        offsetDistance: {Number, default: 10},
     }
     static targets = ['button', 'content']
 
@@ -23,6 +23,9 @@ export default class extends Controller {
             offsetDistance: this.offsetDistanceValue,
             delay: 300,
             ignoreClickOutsideClass: false,
+            onShow: () => {
+                target.querySelector('[data-dropdown-autofocus]')?.focus()
+            },
         }
         let instanceOptions = {
             id: this.targetValue,
