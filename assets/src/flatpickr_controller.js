@@ -140,6 +140,20 @@ export default class extends Controller {
         return selectedRanges
     }
 
+    onReady(selectedDates, dateStr, instance) {
+        const sync = () => {
+            const h = +instance.hourElement?.value
+            const m = +instance.minuteElement?.value
+            if (h > 23 || h < 0 || m > 59 || m < 0) return
+            const d = instance.selectedDates[0]
+            d.setHours(h, m)
+            instance.input.value = instance.formatDate(d, instance.config.dateFormat)
+            instance.input.dispatchEvent(new Event('change', { bubbles: true }))
+        }
+        instance.hourElement?.addEventListener('input', sync)
+        instance.minuteElement?.addEventListener('input', sync)
+    }
+
     generateRangeButtonsHtml(ranges) {
         if (!ranges.length) return ''
         const isMobile = window.innerWidth < 768
@@ -263,6 +277,7 @@ export default class extends Controller {
             plugins,
             onOpen: this.onOpen,
             onChange: this.onChange,
+            onReady: this.onReady,
             onPreCalendarPosition(selectedDates, dateStr, instance) {
                 const predefinedRanges = instance.calendarContainer.querySelector('.flatpickr-predefined-ranges');
                 if (!predefinedRanges) return;
