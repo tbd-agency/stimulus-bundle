@@ -27,7 +27,7 @@ export default class extends Controller {
     dropdownToggle(event) {
         const sidebarState = Cookie.get('sidebar')
 
-        if (sidebarState === 'false') {
+        if (sidebarState === 'false' || sidebarState === undefined) {
             this.expand()
             this.openClickedDropdown(event)
         } else {
