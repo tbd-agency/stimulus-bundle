@@ -23,9 +23,9 @@
     "symfony/flex": "^2",
     "symfony/framework-bundle": "^7.0 || ^8.0",
     "symfony/options-resolver": "^7.0 || ^8.0",
-    "symfony/stimulus-bundle": "^2.23",
+    "symfony/stimulus-bundle": "^2.23 || ^3.0",
     "symfony/ux-icons": "^2.23 || ^3.0",
-    "symfony/ux-twig-component": "^2.23"
+    "symfony/ux-twig-component": "^2.23 || ^3.0"
   },
   "require-dev": {
     "phpstan/phpstan": "^2.1"
