@@ -6,7 +6,7 @@
     }
 
     .flatpickr-calendar.has-ranges .flatpickr-predefined-ranges {
-        @apply h-auto w-full overflow-visible border-b border-gray-200 dark:border-gray-700 p-2 bg-white dark:bg-gray-900 static order-0;
+        @apply h-auto w-full overflow-visible border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 static order-0;
     }
 }
 
@@ -27,7 +27,7 @@
 }
 
 .flatpickr-calendar.has-ranges .flatpickr-predefined-ranges select {
-    @apply w-full border-gray-200 dark:border-gray-700 dark:bg-gray-900;
+    @apply w-full border-gray-200 border-b dark:border-gray-700 dark:bg-gray-900 p-2;
 }
 
 .flatpickr-calendar.has-ranges .flatpickr-predefined-ranges button {
