@@ -35,6 +35,7 @@ export default class extends Controller {
     show() {
         this.popper = createPopper(this.element, this.tooltip, {
             placement: this.placementValue,
+            strategy: 'fixed',
             modifiers: [
                 {name: 'offset', options: {offset: [0, this.offsetDistanceValue]}},
                 {name: 'flip'},
