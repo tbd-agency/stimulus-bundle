@@ -13,7 +13,7 @@ export default class extends Controller {
         let target = document.getElementById(targetValue)
         let options = {
             closable: false,
-            backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-50',
+            backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-60',
         }
 
         let modal = new Modal(target, options)
@@ -86,7 +86,7 @@ export default class extends Controller {
 
         if (!modal) {
             let options = {
-                backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-50',
+                backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-60',
             }
 
             modal = new Modal(target, options)
