@@ -107,6 +107,12 @@
         "fetch": "eager",
         "enabled": true
       },
+      "tooltip": {
+        "main": "src/tooltip_controller.js",
+        "name": "tooltip",
+        "fetch": "lazy",
+        "enabled": true
+      },
       "url": {
         "main": "src/url_controller.js",
         "name": "url",
