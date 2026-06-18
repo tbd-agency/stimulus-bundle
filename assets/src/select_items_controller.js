@@ -129,13 +129,38 @@ export default class extends Controller {
 
                 if (!inFrame) {
                     if (confirm) {
-                        let target = document.getElementById('modal-confirm')
-                        let modal = new Modal(target, {closable: false})
+                        const targetValue = 'modal-confirm'
+                        let target = document.getElementById(targetValue)
+
+                        let modal = FlowbiteInstances.getInstance('Modal', targetValue)
+                        if (modal && !document.body.contains(modal._targetEl)) {
+                            FlowbiteInstances.removeInstance('Modal', targetValue)
+                            modal = null
+                        }
+
+                        if (!modal) {
+                            let options = {
+                                closable: false,
+                                backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-60',
+                            }
+
+                            modal = new Modal(target, options)
+                            modal.updateOnShow(function () {
+                                if (modal._backdropEl) {
+                                    target.parentNode.insertBefore(modal._backdropEl, target)
+                                }
+                            })
+                        }
+
                         if (modal) {
                             modal.show()
-                            target.querySelector('.confirm').addEventListener('click', () => {
-                                form.requestSubmit()
-                            })
+
+                            let confirmButton = target.querySelector('.confirm')
+                            if (confirmButton) {
+                                confirmButton.removeEventListener('click', this.confirmHandler)
+                                this.confirmHandler = () => form.requestSubmit()
+                                confirmButton.addEventListener('click', this.confirmHandler)
+                            }
                         }
                     } else {
                         form.requestSubmit();
