@@ -11,7 +11,7 @@ export default class extends Controller {
         offsetSkidding: {Number, default: 0},
         offsetDistance: {Number, default: 10},
     }
-    static targets = ['button', 'content']
+    static targets = ['button', 'content', 'icon']
 
     connect() {
         let target = document.getElementById(this.targetValue)
@@ -25,6 +25,10 @@ export default class extends Controller {
             ignoreClickOutsideClass: false,
             onShow: () => {
                 target.querySelector('[data-dropdown-autofocus]')?.focus()
+                this.rotateIcon(true)
+            },
+            onHide: () => {
+                this.rotateIcon(false)
             },
         }
         let instanceOptions = {
@@ -51,5 +55,11 @@ export default class extends Controller {
     toggle() {
         if (!this.hasContentTarget) return
         this.contentTarget.hidden = !this.contentTarget.hidden
+        this.rotateIcon(!this.contentTarget.hidden)
+    }
+
+    rotateIcon(open) {
+        if (!this.hasIconTarget) return
+        this.iconTarget.classList.toggle('rotate-180', open)
     }
 }
