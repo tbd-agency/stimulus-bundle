@@ -8,7 +8,9 @@ export default class extends Controller {
     static values = {
         componentSelector: {type: String, default: '[data-live-name-value]'},
         sortableItemSelector: {type: String, default: '[data-sortable-item]'},
+        collectionIndex: {type: Number, default: null},
     }
+    static targets = ['collection']
 
     async connect() {
         let element = this.element
@@ -17,6 +19,8 @@ export default class extends Controller {
         let componentElement = element.closest(this.componentSelectorValue)
         if (componentElement) component = await getComponent(componentElement)
 
+        let collection = this.hasCollectionTarget ? this.collectionTarget : element
+
         this.sortable = Sortable.create(this.element, {
             animation: 150,
             direction: 'vertical',
@@ -24,7 +28,7 @@ export default class extends Controller {
             filter: '.no-drag',
             onEnd: () => {
                 let values = []
-                element.querySelectorAll(this.sortableItemSelectorValue).forEach((item, index) => {
+                collection.querySelectorAll(this.sortableItemSelectorValue).forEach((item, index) => {
                     let key = item.getAttribute('data-key')
                     let weight = item.querySelector('input[id$="_weight"]')
 
@@ -34,7 +38,7 @@ export default class extends Controller {
                     }
                 })
 
-                if (component) component.action('updateWeight', {values})
+                if (component) component.action('updateWeight', {index: this.collectionIndexValue, values})
             },
         });
     }
