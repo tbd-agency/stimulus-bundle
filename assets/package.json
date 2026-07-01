@@ -9,25 +9,25 @@
         "main": "src/ajax_submit_controller.js",
         "name": "ajax-submit",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "app": {
         "main": "src/app_controller.js",
         "name": "app",
         "fetch": "eager",
-        "enabled": true
+        "enabled": false
       },
       "chart": {
         "main": "src/chart_controller.js",
         "name": "chart",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "closeable": {
         "main": "src/closeable_controller.js",
         "name": "closeable",
         "fetch": "lazy",
-        "enabled": true,
+        "enabled": false,
         "autoimport": {
           "@tbd/stimulus-bundle/styles/closeable.css": true
         }
@@ -36,25 +36,25 @@
         "main": "src/confirm_controller.js",
         "name": "confirm",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "dashboard": {
         "main": "src/dashboard_controller.js",
         "name": "dashboard",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "dropdown": {
         "main": "src/dropdown_controller.js",
         "name": "dropdown",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "flatpickr": {
         "main": "src/flatpickr_controller.js",
         "name": "flatpickr",
         "fetch": "lazy",
-        "enabled": true,
+        "enabled": false,
         "autoimport": {
           "@tbd/stimulus-bundle/styles/flatpickr.css": true
         }
@@ -63,61 +63,61 @@
         "main": "src/inline_edit_controller.js",
         "name": "inline-edit",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "marker": {
         "main": "src/marker_controller.js",
         "name": "marker",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "modal": {
         "main": "src/modal_controller.js",
         "name": "modal",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "reset-search": {
         "main": "src/reset_search_controller.js",
         "name": "reset-search",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "select-items": {
         "main": "src/select_items_controller.js",
         "name": "select-items",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "sidebar": {
         "main": "src/sidebar_controller.js",
         "name": "sidebar",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "sortable": {
         "main": "src/sortable_controller.js",
         "name": "sortable",
         "fetch": "eager",
-        "enabled": true
+        "enabled": false
       },
       "theme": {
         "main": "src/theme_controller.js",
         "name": "theme",
         "fetch": "eager",
-        "enabled": true
+        "enabled": false
       },
       "tooltip": {
         "main": "src/tooltip_controller.js",
         "name": "tooltip",
         "fetch": "lazy",
-        "enabled": true
+        "enabled": false
       },
       "url": {
         "main": "src/url_controller.js",
         "name": "url",
         "fetch": "lazy",
-        "enabled": true,
+        "enabled": false,
         "autoimport": {
           "@tbd/stimulus-bundle/styles/url.css": true
         }
