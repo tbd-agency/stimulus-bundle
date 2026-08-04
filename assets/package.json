@@ -87,7 +87,10 @@
         "main": "src/select_items_controller.js",
         "name": "select-items",
         "fetch": "lazy",
-        "enabled": false
+        "enabled": false,
+        "autoimport": {
+          "@tbd/stimulus-bundle/styles/select-items.css": true
+        }
       },
       "sidebar": {
         "main": "src/sidebar_controller.js",

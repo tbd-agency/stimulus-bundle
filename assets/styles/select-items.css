@@ -1,0 +1,5 @@
+@reference "tailwindcss";
+
+input[data-select-items-target='checkbox']:focus {
+    @apply outline-solid outline-2 outline-offset-2 outline-blue-400;
+}

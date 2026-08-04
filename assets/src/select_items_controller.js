@@ -6,6 +6,37 @@ export default class extends Controller {
 
     connect() {
         this.lastCheckedIndex = null;
+        this.shiftPressed = false;
+
+
+        this.trackShift = (event) => {
+            this.shiftPressed = event.shiftKey;
+
+            if (event.key === 'Escape') {
+                document.activeElement?.blur();
+            }
+        };
+        this.releaseShift = () => {
+            this.shiftPressed = false;
+        };
+
+        this.clearAnchor = (event) => {
+            if (!this.checkboxTargets.includes(event.relatedTarget)) {
+                this.lastCheckedIndex = null;
+            }
+        };
+
+        document.addEventListener('keydown', this.trackShift);
+        document.addEventListener('keyup', this.trackShift);
+        window.addEventListener('blur', this.releaseShift);
+        this.element.addEventListener('focusout', this.clearAnchor);
+    }
+
+    disconnect() {
+        document.removeEventListener('keydown', this.trackShift);
+        document.removeEventListener('keyup', this.trackShift);
+        window.removeEventListener('blur', this.releaseShift);
+        this.element.removeEventListener('focusout', this.clearAnchor);
     }
 
     selectAllVisible(event) {
@@ -54,12 +85,15 @@ export default class extends Controller {
             const currentElement = event.currentTarget;
             const currentIndex = this.checkboxTargets.indexOf(currentElement);
 
-            if (window.shiftKey && this.lastCheckedIndex !== null && currentIndex !== -1) {
+            if (this.shiftPressed && this.lastCheckedIndex !== null && currentIndex !== -1) {
                 const start = Math.min(this.lastCheckedIndex, currentIndex);
                 const end = Math.max(this.lastCheckedIndex, currentIndex);
                 for (let i = start; i <= end; i++) {
                     this.checkboxTargets[i].checked = currentElement.checked;
                 }
+
+                // Shift clicking also drags a text selection across the table
+                document.getSelection()?.removeAllRanges();
             }
 
             this.lastCheckedIndex = currentIndex;
@@ -92,8 +126,6 @@ export default class extends Controller {
                 this.alertTarget.classList.add('hidden');
             }
         }
-
-        event.currentTarget.blur();
     }
 
     handle(event) {
