@@ -26,10 +26,23 @@ export default class extends Controller {
             }
         };
 
+        this.resetOnAction = (event) => {
+            if (!event.detail?.success) {
+                return;
+            }
+
+            if (!event.target.closest('[data-select-items-target="alert"]')) {
+                return;
+            }
+
+            this.reset();
+        };
+
         document.addEventListener('keydown', this.trackShift);
         document.addEventListener('keyup', this.trackShift);
         window.addEventListener('blur', this.releaseShift);
         this.element.addEventListener('focusout', this.clearAnchor);
+        this.element.addEventListener('turbo:submit-end', this.resetOnAction);
     }
 
     disconnect() {
@@ -37,6 +50,56 @@ export default class extends Controller {
         document.removeEventListener('keyup', this.trackShift);
         window.removeEventListener('blur', this.releaseShift);
         this.element.removeEventListener('focusout', this.clearAnchor);
+        this.element.removeEventListener('turbo:submit-end', this.resetOnAction);
+    }
+
+    reset() {
+        if (!this.hasAlertTarget || this.alertTarget.classList.contains('hidden')) {
+            return;
+        }
+
+        this.closeDropdown();
+
+        if (this.hasCheckboxHeaderTarget) {
+            this.checkboxHeaderTarget.checked = false;
+        }
+
+        this.checkboxTargets.forEach((input) => {
+            input.checked = false;
+        });
+
+        if (this.hasAmountTarget) {
+            this.amountTarget.innerHTML = 0;
+            this.amountTarget.classList.remove('hidden');
+        }
+        if (this.hasTotalTarget) {
+            this.totalTarget.classList.add('hidden');
+        }
+        if (this.hasSelectAllTarget) {
+            this.selectAllTarget.classList.remove('hidden');
+        }
+        if (this.hasRemoveAllTarget) {
+            this.removeAllTarget.classList.add('hidden');
+        }
+
+        this.alertTarget.classList.add('hidden');
+
+        this.lastCheckedIndex = null;
+    }
+
+    closeDropdown() {
+        let dropdown = this.alertTarget.querySelector('[data-controller~="dropdown"]');
+
+        if (!dropdown) {
+            return;
+        }
+
+        let content = document.getElementById(dropdown.dataset.dropdownTargetValue);
+        let trigger = document.getElementById(dropdown.dataset.dropdownTriggerValue);
+
+        if (content && trigger && !content.classList.contains('hidden')) {
+            trigger.click();
+        }
     }
 
     selectAllVisible(event) {
