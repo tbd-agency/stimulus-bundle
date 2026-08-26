@@ -5,7 +5,7 @@ export default class extends Controller {
     static values = {
         id: {type: String, default: 'modal-confirm'},
         path: String,
-        stream: Boolean,
+        method: String,
     }
 
     modal() {
@@ -17,10 +17,10 @@ export default class extends Controller {
             let confirm = modal.querySelector('.confirm')
             confirm.setAttribute('href', path)
 
-            if (this.streamValue) {
-                confirm.setAttribute('data-turbo-stream', '')
+            if (this.hasMethodValue) {
+                confirm.setAttribute('data-turbo-method', this.methodValue)
             } else {
-                confirm.removeAttribute('data-turbo-stream')
+                confirm.removeAttribute('data-turbo-method')
             }
         }
     }
