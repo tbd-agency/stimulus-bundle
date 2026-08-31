@@ -11,17 +11,30 @@ export default class extends Controller {
     modal() {
         let id = this.idValue
         let path = this.pathValue
+
         let modal = document.getElementById(id)
+        if (!modal) {
+            return
+        }
 
-        if (modal) {
-            let confirm = modal.querySelector('.confirm')
-            confirm.setAttribute('href', path)
+        let confirm = modal.querySelector('.confirm')
+        if (!confirm) {
+            return
+        }
 
-            if (this.hasMethodValue) {
-                confirm.setAttribute('data-turbo-method', this.methodValue)
-            } else {
-                confirm.removeAttribute('data-turbo-method')
-            }
+        let form = confirm.closest('form')
+        if (form) {
+            form.setAttribute('action', path)
+
+            return
+        }
+
+        confirm.setAttribute('href', path)
+
+        if (this.hasMethodValue) {
+            confirm.setAttribute('data-turbo-method', this.methodValue)
+        } else {
+            confirm.removeAttribute('data-turbo-method')
         }
     }
 }
