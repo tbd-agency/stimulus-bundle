@@ -18,6 +18,8 @@ export default class extends Controller {
     toggleDarkMode(event) {
         let currentTheme
 
+        this.suppressTransitions()
+
         if (Cookie.get('color_theme') === 'dark') {
             document.documentElement.classList.remove('dark')
             Cookie.set('color_theme', 'light', {expires: 365})
@@ -37,6 +39,25 @@ export default class extends Controller {
         }))
 
         event.currentTarget.blur()
+    }
+
+    /*
+     * Turns every transition off before the theme swap and back on once the new
+     * theme has been painted, so the page changes in one go instead of some
+     * elements fading while the rest snaps over.
+     */
+    suppressTransitions() {
+        document.documentElement.classList.add('theme-switching')
+
+        // Force a style recalculation so the suppression is in effect before
+        // the colours change rather than in the same batch as them.
+        document.documentElement.offsetHeight
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                document.documentElement.classList.remove('theme-switching')
+            })
+        })
     }
 
     toggleButtons() {

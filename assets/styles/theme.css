@@ -1,0 +1,12 @@
+/*
+ * Applied to <html> for the duration of a theme swap. Without it only the
+ * elements that carry a transition class animate their colours, while the rest
+ * of the page changes instantly, which reads as the page tearing into the new
+ * theme instead of switching to it.
+ */
+.theme-switching,
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+    transition: none !important;
+}

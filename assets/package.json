@@ -108,7 +108,10 @@
         "main": "src/theme_controller.js",
         "name": "theme",
         "fetch": "eager",
-        "enabled": false
+        "enabled": false,
+        "autoimport": {
+          "@tbd/stimulus-bundle/styles/theme.css": true
+        }
       },
       "tooltip": {
         "main": "src/tooltip_controller.js",

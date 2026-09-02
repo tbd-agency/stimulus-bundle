@@ -42,25 +42,25 @@ Stimulus bridge and registered in your `assets/controllers.json`. After
 The following controllers are exposed under the `@tbd/stimulus-bundle`
 namespace:
 
-| Controller       | Fetch  | Enabled | Autoimports CSS |
-|------------------|--------|---------|------------------|
-| `ajax-submit`    | lazy   | yes     |                  |
-| `app`            | eager  | yes     |                  |
-| `chart`          | lazy   | yes     |                  |
-| `closeable`      | lazy   | yes     | `closeable.css`  |
-| `confirm`        | lazy   | yes     |                  |
-| `dashboard`      | lazy   | yes     |                  |
-| `dropdown`       | lazy   | yes     |                  |
-| `flatpickr`      | lazy   | yes     | `flatpickr.css`  |
-| `inline-edit`    | lazy   | yes     |                  |
-| `marker`         | lazy   | yes     |                  |
-| `modal`          | lazy   | yes     |                  |
-| `reset-search`   | lazy   | yes     |                  |
-| `select-items`   | lazy   | yes     |                  |
-| `sidebar`        | lazy   | yes     |                  |
-| `sortable`       | eager  | yes     |                  |
-| `theme`          | eager  | yes     |                  |
-| `url`            | lazy   | yes     | `url.css`        |
+| Controller     | Fetch | Enabled | Autoimports CSS    |
+|----------------|-------|---------|--------------------|
+| `ajax-submit`  | lazy  | yes     |                    |
+| `app`          | eager | yes     |                    |
+| `chart`        | lazy  | yes     |                    |
+| `closeable`    | lazy  | yes     | `closeable.css`    |
+| `confirm`      | lazy  | yes     |                    |
+| `dashboard`    | lazy  | yes     |                    |
+| `dropdown`     | lazy  | yes     |                    |
+| `flatpickr`    | lazy  | yes     | `flatpickr.css`    |
+| `inline-edit`  | lazy  | yes     |                    |
+| `marker`       | lazy  | yes     |                    |
+| `modal`        | lazy  | yes     |                    |
+| `reset-search` | lazy  | yes     |                    |
+| `select-items` | lazy  | yes     | `select-items.css` |
+| `sidebar`      | lazy  | yes     |                    |
+| `sortable`     | eager | yes     |                    |
+| `theme`        | eager | yes     | `theme.css`        |
+| `url`          | lazy  | yes     | `url.css`          |
 
 You can flip individual controllers to `"enabled": false` in
 `assets/controllers.json` if your application doesn't use them.
