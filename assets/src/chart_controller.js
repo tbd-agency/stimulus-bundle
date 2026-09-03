@@ -7,10 +7,14 @@ export default class extends Controller {
     static values = {
         routes: Array,
         settings: Object,
+        lightColor: String,
+        darkColor: String,
     }
 
     connect() {
         let settings = this.settingsValue
+
+        this.applyLabelColor(settings.options)
 
         if (this.hasRoutesValue) {
             settings.options.onClick = (event, item) => {
@@ -67,6 +71,49 @@ export default class extends Controller {
             legend: {display: false},
         }
 
-        new Chart(this.canvasTarget, settings)
+        this.chart = new Chart(this.canvasTarget, settings)
+
+        if (this.hasLightColorValue || this.hasDarkColorValue) {
+            this.handleThemeChanged = () => {
+                this.applyLabelColor(this.chart.config.options)
+                this.chart.update()
+            }
+
+            document.addEventListener('theme:changed', this.handleThemeChanged)
+        }
+    }
+
+    disconnect() {
+        if (this.handleThemeChanged) {
+            document.removeEventListener('theme:changed', this.handleThemeChanged)
+        }
+
+        if (this.chart) {
+            this.chart.destroy()
+        }
+    }
+
+    labelColor() {
+        return document.documentElement.classList.contains('dark')
+            ? this.darkColorValue || null
+            : this.lightColorValue || null
+    }
+
+    applyLabelColor(options) {
+        const color = this.labelColor()
+
+        if (color === null) {
+            return
+        }
+
+        options.color = color
+
+        Object.values(options.scales ?? {}).forEach((scale) => {
+            scale.ticks = Object.assign({}, scale.ticks, {color: color})
+
+            if (scale.title) {
+                scale.title.color = color
+            }
+        })
     }
 }
