@@ -13,6 +13,8 @@ export default class extends Controller {
         this.tooltip = document.getElementById(this.targetValue)
         if (!this.tooltip) return
 
+        document.body.appendChild(this.tooltip)
+
         this.show = this.show.bind(this)
         this.hide = this.hide.bind(this)
 
@@ -30,6 +32,9 @@ export default class extends Controller {
         this.element.removeEventListener('focus', this.show)
         this.element.removeEventListener('blur', this.hide)
         this.popper?.destroy()
+
+        this.tooltip.remove()
+        this.tooltip = null
     }
 
     show() {
