@@ -13,6 +13,7 @@ export default class extends Controller {
         this.tooltip = document.getElementById(this.targetValue)
         if (!this.tooltip) return
 
+        this.sidebarGate = this.tooltip.closest('[data-sidebar-target="collapseShow"]')
         document.body.appendChild(this.tooltip)
 
         this.show = this.show.bind(this)
@@ -38,6 +39,8 @@ export default class extends Controller {
     }
 
     show() {
+        if (this.sidebarGate && this.sidebarGate.classList.contains('hidden')) return
+
         this.popper = createPopper(this.element, this.tooltip, {
             placement: this.placementValue,
             strategy: 'fixed',
