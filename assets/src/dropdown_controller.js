@@ -16,19 +16,27 @@ export default class extends Controller {
     connect() {
         let target = document.getElementById(this.targetValue)
         let trigger = document.getElementById(this.triggerValue)
+        let childClass = this.childClass(this.targetValue)
+
+        this.ancestorIds().forEach(id => target.classList.add(this.childClass(id)))
+
         let options = {
             placement: this.placementValue,
             triggerType: 'click',
             offsetSkidding: this.offsetSkiddingValue,
             offsetDistance: this.offsetDistanceValue,
             delay: 300,
-            ignoreClickOutsideClass: false,
+            ignoreClickOutsideClass: CSS.escape(childClass),
             onShow: () => {
                 target.querySelector('[data-dropdown-autofocus]')?.focus()
                 this.rotateIcon(true)
             },
             onHide: () => {
                 this.rotateIcon(false)
+                document.querySelectorAll(`.${CSS.escape(childClass)}`).forEach(child => {
+                    let instance = window.FlowbiteInstances.getInstance('Dropdown', child.id)
+                    if (instance?.isVisible()) instance.hide()
+                })
             },
         }
         let instanceOptions = {
@@ -56,6 +64,24 @@ export default class extends Controller {
         if (!this.hasContentTarget) return
         this.contentTarget.hidden = !this.contentTarget.hidden
         this.rotateIcon(!this.contentTarget.hidden)
+    }
+
+    ancestorIds() {
+        let ids = []
+        let element = this.element
+        let content
+
+        while ((content = element.closest('[data-dropdown-target="content"]'))) {
+            ids.push(content.id)
+            element = document.querySelector(`[data-dropdown-target-value="${CSS.escape(content.id)}"]`)
+            if (!element) break
+        }
+
+        return ids
+    }
+
+    childClass(id) {
+        return `dropdown-child-of-${id}`
     }
 
     rotateIcon(open) {
