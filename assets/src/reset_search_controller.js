@@ -2,6 +2,10 @@ import {Controller} from '@hotwired/stimulus';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
+    static values = {
+        sortParam: {type: String, default: ''},
+    }
+
     reset() {
         let element = this.element
         let form = element.closest('form')
@@ -28,6 +32,17 @@ export default class extends Controller {
                 }
             }
         });
+
+       if (this.sortParamValue) {
+            let sortInput = form.querySelector(`input[name="${this.sortParamValue}"]`)
+            if (!sortInput) {
+                sortInput = document.createElement('input')
+                sortInput.type = 'hidden'
+                sortInput.name = this.sortParamValue
+                form.appendChild(sortInput)
+            }
+            sortInput.value = '1'
+        }
 
         form.requestSubmit()
     }
