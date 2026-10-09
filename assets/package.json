@@ -83,6 +83,12 @@
         "fetch": "lazy",
         "enabled": false
       },
+      "resizable-table": {
+        "main": "src/resizable_table_controller.js",
+        "name": "resizable-table",
+        "fetch": "eager",
+        "enabled": false
+      },
       "select-items": {
         "main": "src/select_items_controller.js",
         "name": "select-items",
