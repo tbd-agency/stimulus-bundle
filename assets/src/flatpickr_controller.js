@@ -8,6 +8,8 @@ export default class extends Controller {
         enableTime: {type: Boolean, default: false},
         minDateToday: {type: Boolean, default: false},
         maxDateToday: {type: Boolean, default: false},
+        minDate: {type: String, default: ''},
+        maxDate: {type: String, default: ''},
         mode: {type: String, default: 'single'}, // 'single' | 'range'
         enablePredefinedRanges: {type: Boolean, default: false},
         predefinedRanges: {type: Array, default: []},
@@ -251,6 +253,15 @@ export default class extends Controller {
         instance.setDate([newStart, end], false)
     }
 
+    resolveBound(date, today) {
+        if (date) {
+            // Local midnight, as new Date('Y-m-d') would parse the string as UTC
+            return new Date(`${date}T00:00:00`)
+        }
+
+        return today ? 'today' : false
+    }
+
     create() {
         if (this.fp) {
             this.fp.destroy()
@@ -271,8 +282,8 @@ export default class extends Controller {
             dateFormat: this.dateFormatValue,
             defaultDate: this.defaultDateValue,
             enableTime: this.enableTimeValue,
-            minDate: this.minDateTodayValue ? 'today' : false,
-            maxDate: this.maxDateTodayValue ? 'today' : false,
+            minDate: this.resolveBound(this.minDateValue, this.minDateTodayValue),
+            maxDate: this.resolveBound(this.maxDateValue, this.maxDateTodayValue),
             mode: effectiveMode,
             plugins,
             onOpen: this.onOpen,
