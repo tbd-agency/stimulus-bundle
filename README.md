@@ -63,6 +63,7 @@ namespace:
 | `sidebar`         | lazy  | yes     |                    |
 | `sortable`        | eager | yes     |                    |
 | `theme`           | eager | yes     | `theme.css`        |
+| `tinymce`         | lazy  | no      | `tinymce.css`      |
 | `url`             | lazy  | yes     | `url.css`          |
 | `visibility-change` | lazy | yes    |                    |
 | `visibility-click` | lazy | yes     |                    |
@@ -520,3 +521,159 @@ The `control-selector` and `display-selector` values are gone: use the
 targets. A project that needs its own version sets `visibility-change` to
 `"enabled": false` in `assets/controllers.json` and adds
 `assets/controllers/visibility_change_controller.js`.
+## TinyMCE
+
+The `tinymce` controller turns a textarea into a [TinyMCE](https://www.tiny.cloud/docs/tinymce/latest/)
+editor. TinyMCE is a heavy dependency, so the controller is **off by default**.
+
+### Turning it on and off
+
+Turn the controller on in `assets/controllers.json`:
+
+```json
+"@tbd/stimulus-bundle": {
+    "tinymce": {
+        "enabled": true,
+        "fetch": "lazy",
+        "autoimport": {
+            "@tbd/stimulus-bundle/styles/tinymce.css": true
+        }
+    }
+}
+```
+
+- `tinymce.css` styles the editor with the `tbd-*` colour tokens of
+  `tbd/twig-component-bundle` v2. Set the autoimport to `false` in a project
+  without those tokens.
+- A project that needs more than the values below keeps `"enabled": false`
+  and adds its own `assets/controllers/tinymce_controller.js`. That file can
+  extend the bundle controller instead of copying it:
+
+```js
+import TinymceController from '@tbd/stimulus-bundle/src/tinymce_controller.js'
+import '../tinymce/plugins/editorroute/plugin'
+
+/* stimulusFetch: 'lazy' */
+export default class extends TinymceController {
+    static values = {documentsRoute: String}
+
+    options(textarea) {
+        return {...super.options(textarea), editorroute_documents_route: this.documentsRouteValue}
+    }
+}
+```
+
+### Loading TinyMCE
+
+The controller uses the `tinymce` npm package, self-hosted. Flex adds it to
+your `package.json`, because it is a peer dependency of this bundle. It ends
+up in the build only when the controller is turned on.
+
+Only the TinyMCE core is bundled with the controller. TinyMCE loads its
+theme, icons, skins and plugins itself at runtime from `baseUrl`
+(`/build/tinymce` by default), so Encore has to copy the package there:
+
+```js
+// webpack.config.js
+Encore
+    .copyFiles({
+        from: 'node_modules/tinymce',
+        to: 'tinymce/[path][name].[ext]',
+    })
+```
+
+This is how the TBD projects already load TinyMCE, so they need no webpack
+changes. The approach also keeps the controller flexible:
+
+- any plugin named in `plugins` works without an extra `import`;
+- the dark skin is only downloaded in dark mode;
+- the lazy controller chunk only contains the core;
+- nothing goes through Tiny Cloud, so no API key is needed (`license_key: 'gpl'`).
+
+AssetMapper is not supported out of the box: TinyMCE needs its whole package
+served, which `importmap:require` does not do.
+
+### Values
+
+| Value          | Default                                                  | Description                                                                                         |
+|----------------|----------------------------------------------------------|-----------------------------------------------------------------------------------------------------|
+| `toolbar`      | `undo redo \| blocks \| bold italic … \| removeformat code` | The TinyMCE toolbar.                                                                                |
+| `plugins`      | `autolink link lists image anchor table code wordcount`  | Space-separated plugin names, loaded from `baseUrl`.                                                |
+| `height`       | `200`                                                    | Editor height in pixels.                                                                            |
+| `menubar`      | `false`                                                  | Show the menu bar.                                                                                  |
+| `uploadPath`   | (empty)                                                  | URL the image dialog uploads to. Empty hides the upload button.                                     |
+| `contentCss`   | (empty)                                                  | Stylesheet for the editor content, usually `asset('build/app.css')`. Empty uses TinyMCE's own.      |
+| `contentStyle` | (empty)                                                  | Extra CSS for the editor content, e.g. a font `@import`.                                            |
+| `bodyClass`    | `prose dark:prose-invert p-4`                            | Classes on the content body. `prose` needs `@tailwindcss/typography` in the content CSS.             |
+| `skin`         | `tinymce-5`                                              | TinyMCE skin. Dark mode uses `<skin>-dark`.                                                         |
+| `baseUrl`      | `/build/tinymce`                                         | Where the copied TinyMCE package is served.                                                         |
+| `options`      | `{}`                                                     | Any other [TinyMCE option](https://www.tiny.cloud/docs/tinymce/latest/editor-important-options/), as JSON. Wins over the values above. |
+
+Besides these values, the controller always sets what the projects shared:
+`toolbar_mode: 'sliding'`, no branding, and absolute URLs including the host
+(`relative_urls: false`, `remove_script_host: false`), so links keep working
+in e-mails.
+
+The controller writes the content back to the textarea and dispatches a
+bubbling `change` event on it at every TinyMCE change, for Live Components.
+It also has two actions:
+
+- `sync` reloads the editors from their textarea, e.g. on
+  `tinymce:change@document` after a Live Component changed the value;
+- `insertMarker` inserts `event.detail.marker` from the `marker` controller as
+  text, on `insert:marker`.
+
+**Upload.** The image is posted as the `upload` field to `uploadPath`, which
+answers `{"url": "…"}`, or `{"error": {"message": "…"}}` with an error status.
+The message is shown in the editor.
+
+**Dark mode.** The editors follow the `dark` class on `<html>`: when it
+changes, they restart with the dark skin, and the content iframe gets the
+`dark` class on its own `<html>` too, so the `tbd-*` tokens and `dark:`
+variants work inside the content.
+
+### Attaching it to a `TextareaType`
+
+For one field, put the controller on the textarea itself:
+
+```php
+use Symfony\Component\Asset\Packages;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\FormBuilderInterface;
+
+public function __construct(private readonly Packages $packages)
+{
+}
+
+public function buildForm(FormBuilderInterface $builder, array $options): void
+{
+    $builder->add('body', TextareaType::class, [
+        'attr' => [
+            'data-controller' => 'tinymce',
+            'data-tinymce-content-css-value' => $this->packages->getUrl('build/app.css'),
+            'data-tinymce-height-value' => 400,
+        ],
+    ]);
+}
+```
+
+For every textarea, use a form theme. Inside a Live Component, the wrapper
+needs `data-live-ignore`, so that a re-render does not remove the editor.
+A field opts out with `'attr' => ['tinymce' => false]`:
+
+```twig
+{%- block textarea_widget -%}
+    {%- if attr.tinymce is defined and attr.tinymce is same as(false) -%}
+        {{- parent() -}}
+    {%- else -%}
+        <div data-live-ignore
+             data-controller="tinymce"
+             data-tinymce-content-css-value="{{ asset('build/app.css') }}"
+             data-tinymce-upload-path-value="{{ path('tinymce_upload') }}"
+             data-action="tinymce:change@document->tinymce#sync insert:marker->tinymce#insertMarker">
+            {%- set attr = attr|merge({'data-tinymce-target': 'input'}) -%}
+            {{- parent() -}}
+        </div>
+    {%- endif -%}
+{%- endblock textarea_widget -%}
+```

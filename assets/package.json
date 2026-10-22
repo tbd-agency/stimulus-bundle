@@ -138,6 +138,15 @@
           "@tbd/stimulus-bundle/styles/theme.css": true
         }
       },
+      "tinymce": {
+        "main": "src/tinymce_controller.js",
+        "name": "tinymce",
+        "fetch": "lazy",
+        "enabled": false,
+        "autoimport": {
+          "@tbd/stimulus-bundle/styles/tinymce.css": true
+        }
+      },
       "tooltip": {
         "main": "src/tooltip_controller.js",
         "name": "tooltip",
@@ -191,6 +200,7 @@
     "flatpickr": "^4.6.13",
     "leaflet": "^1.9.4",
     "sortablejs": "^1.15.0",
+    "tinymce": "^7.0.0 || ^8.0.0",
     "@symfony/ux-live-component": "^2.0.0"
   },
   "peerDependencies": {
@@ -204,6 +214,7 @@
     "flatpickr": "^4.6.13",
     "leaflet": "^1.9.4",
     "sortablejs": "^1.15.0",
+    "tinymce": "^7.0.0 || ^8.0.0",
     "@symfony/ux-live-component": "^2.0.0"
   }
 }

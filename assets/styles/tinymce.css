@@ -1,0 +1,278 @@
+/*
+ * Restyles the TinyMCE interface with the tbd-* colour tokens of tbd/twig-component-bundle v2,
+ * which switch value under html.dark. A project without those tokens turns this autoimport off
+ * in assets/controllers.json.
+ *
+ * Tailwind only writes the light value of a token that its sources use, and this file is not
+ * one of them, so every token falls back to its light value from theme.css. The html.dark
+ * values are always written.
+ *
+ * TinyMCE adds its skin stylesheet after the page's own CSS, so these rules need !important.
+ * The editor content is an iframe; the controller styles that through content_style.
+ */
+
+.tox {
+    --tox-private-font-stack: var(--font-theme);
+}
+
+.tox,
+.tox .tox-dialog__title,
+.tox .tox-label,
+.tox .tox-button {
+    font-family: var(--font-theme) !important;
+}
+
+/* Editor */
+
+.tox-tinymce:not(.tox-tinymce-inline) {
+    border: 1px solid var(--color-tbd-line, #dee2e6) !important;
+    border-radius: 0.5rem !important;
+}
+
+.tox .tox-editor-header,
+.tox .tox-toolbar-overlord,
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-toolbar__overflow,
+.tox .tox-edit-area__iframe,
+.tox .tox-statusbar {
+    background-color: var(--color-tbd-surface, #FFFFFF) !important;
+}
+
+.tox .tox-toolbar,
+.tox .tox-toolbar__primary,
+.tox .tox-toolbar__overflow {
+    background-image: none !important;
+}
+
+.tox:not(.tox-tinymce-inline) .tox-editor-header {
+    border-bottom: 1px solid var(--color-tbd-line, #dee2e6) !important;
+}
+
+.tox:not([dir=rtl]) .tox-toolbar__group:not(:last-of-type) {
+    border-right-color: var(--color-tbd-line, #dee2e6) !important;
+}
+
+.tox[dir=rtl] .tox-toolbar__group:not(:last-of-type) {
+    border-left-color: var(--color-tbd-line, #dee2e6) !important;
+}
+
+.tox .tox-edit-area::before {
+    border-color: var(--color-tbd-accent, #3263A5) !important;
+}
+
+.tox .tox-statusbar {
+    border-top-color: var(--color-tbd-line, #dee2e6) !important;
+}
+
+.tox .tox-statusbar,
+.tox .tox-statusbar a,
+.tox .tox-statusbar__path-item,
+.tox .tox-statusbar__wordcount {
+    color: var(--color-tbd-ink-subtle, #5c636a) !important;
+}
+
+.tox .tox-statusbar__resize-handle svg {
+    fill: var(--color-tbd-ink-subtle, #5c636a) !important;
+}
+
+/* Toolbar buttons */
+
+.tox .tox-tbtn,
+.tox .tox-split-button,
+.tox .tox-split-button__chevron {
+    background: transparent !important;
+    color: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-tbtn svg {
+    fill: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-tbtn:not(.tox-tbtn--disabled, .tox-tbtn--enabled, [aria-pressed="true"], :disabled):hover,
+.tox .tox-split-button:not(.tox-tbtn--disabled):hover {
+    background: var(--color-tbd-tint-strong, rgb(18 37 60 / 0.1)) !important;
+    cursor: pointer;
+}
+
+.tox .tox-tbtn--enabled,
+.tox .tox-tbtn--enabled:hover,
+.tox .tox-tbtn--enabled:focus,
+.tox .tox-tbtn[aria-pressed="true"] {
+    background: var(--color-tbd-accent, #3263A5) !important;
+    color: var(--color-tbd-on-accent, #FFFFFF) !important;
+}
+
+.tox .tox-tbtn--enabled svg,
+.tox .tox-tbtn[aria-pressed="true"] svg {
+    fill: var(--color-tbd-on-accent, #FFFFFF) !important;
+}
+
+.tox .tox-tbtn--disabled,
+.tox .tox-tbtn:disabled {
+    opacity: 0.4;
+}
+
+/* Menus, such as the blocks dropdown */
+
+.tox .tox-menu {
+    background-color: var(--color-tbd-surface, #FFFFFF) !important;
+    border: 1px solid var(--color-tbd-line, #dee2e6) !important;
+    border-radius: 0.5rem !important;
+}
+
+.tox .tox-collection__item {
+    color: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-collection__item svg {
+    fill: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-collection--list .tox-collection__item--active:not(.tox-collection__item--state-disabled) {
+    background-color: var(--color-tbd-tint-strong, rgb(18 37 60 / 0.1)) !important;
+}
+
+.tox .tox-collection--list .tox-collection__item--enabled:not(.tox-collection__item--state-disabled) {
+    background-color: var(--color-tbd-tint, rgb(18 37 60 / 0.04)) !important;
+}
+
+.tox .tox-collection__item-label > * {
+    background-color: transparent !important;
+}
+
+.tox .tox-insert-table-picker > div {
+    border-color: var(--color-tbd-line, #dee2e6) !important;
+}
+
+.tox .tox-insert-table-picker .tox-insert-table-picker__selected {
+    background-color: color-mix(in srgb, var(--color-tbd-accent, #3263A5) 30%, transparent) !important;
+    border-color: var(--color-tbd-accent, #3263A5) !important;
+}
+
+/* Dialogs */
+
+.tox .tox-dialog-wrap__backdrop {
+    background-color: color-mix(in srgb, var(--color-tbd-navy, #12253C) 50%, transparent) !important;
+}
+
+.tox .tox-dialog,
+.tox .tox-dialog__header,
+.tox .tox-dialog__body,
+.tox .tox-dialog__footer {
+    background-color: var(--color-tbd-surface, #FFFFFF) !important;
+    color: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-dialog {
+    border: 1px solid var(--color-tbd-line, #dee2e6) !important;
+    border-radius: 0.5rem !important;
+}
+
+.tox .tox-dialog__header {
+    border-bottom: 1px solid var(--color-tbd-line, #dee2e6) !important;
+    padding: 1rem !important;
+}
+
+.tox .tox-dialog__title {
+    font-size: 1.25rem !important;
+}
+
+.tox .tox-dialog__body-content {
+    padding: 1rem 1rem 0 !important;
+}
+
+.tox .tox-dialog__footer {
+    border-top: none !important;
+    padding: 1rem !important;
+}
+
+.tox .tox-form__group {
+    margin-bottom: 0.5rem !important;
+}
+
+.tox .tox-label {
+    color: var(--color-tbd-ink-muted, #495057) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.tox .tox-textfield,
+.tox .tox-textarea,
+.tox .tox-listboxfield .tox-listbox--select,
+.tox .tox-selectfield select {
+    background-color: var(--color-tbd-surface, #FFFFFF) !important;
+    border: 1px solid var(--color-tbd-line-strong, #ced4da) !important;
+    border-radius: 0.5rem !important;
+    color: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-textfield:focus,
+.tox .tox-textarea:focus,
+.tox .tox-listboxfield .tox-listbox--select:focus,
+.tox .tox-selectfield select:focus {
+    border-color: var(--color-tbd-accent, #3263A5) !important;
+    box-shadow: 0 0 0 1px var(--color-tbd-accent, #3263A5) !important;
+    outline: none !important;
+}
+
+.tox .tox-listbox__select-chevron svg,
+.tox .tox-selectfield__icon-js svg {
+    fill: var(--color-tbd-ink-muted, #495057) !important;
+}
+
+/* Primary action first, as in the forms of TBD projects */
+.tox .tox-dialog__footer-end {
+    display: flex !important;
+    flex: 1 !important;
+    gap: 0.5rem !important;
+}
+
+.tox:not([dir=rtl]) .tox-dialog__footer .tox-dialog__footer-end > * {
+    margin-left: 0 !important;
+}
+
+.tox .tox-dialog__footer-end .tox-button {
+    order: 1;
+}
+
+.tox .tox-dialog__footer-end .tox-button--secondary {
+    order: 2;
+}
+
+.tox .tox-button {
+    border-radius: 0.5rem !important;
+}
+
+.tox .tox-button:not(.tox-button--secondary, .tox-button--naked) {
+    background-color: var(--color-tbd-accent, #3263A5) !important;
+    border-color: var(--color-tbd-accent, #3263A5) !important;
+    color: var(--color-tbd-on-accent, #FFFFFF) !important;
+}
+
+.tox .tox-button:not(.tox-button--secondary, .tox-button--naked):hover {
+    background-color: var(--color-tbd-accent-strong, #284f84) !important;
+    border-color: var(--color-tbd-accent-strong, #284f84) !important;
+}
+
+.tox .tox-button--secondary {
+    background-color: var(--color-tbd-surface, #FFFFFF) !important;
+    border-color: var(--color-tbd-line-strong, #ced4da) !important;
+    color: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-button--naked {
+    background-color: transparent !important;
+    border-color: transparent !important;
+    color: var(--color-tbd-ink, #12253C) !important;
+}
+
+.tox .tox-button--secondary:hover,
+.tox .tox-button--naked:hover {
+    background-color: var(--color-tbd-tint-strong, rgb(18 37 60 / 0.1)) !important;
+}
+
+.tox .tox-button--secondary svg,
+.tox .tox-button--naked svg {
+    fill: var(--color-tbd-ink, #12253C) !important;
+}
