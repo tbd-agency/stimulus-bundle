@@ -63,9 +63,67 @@ namespace:
 | `theme`           | eager | yes     | `theme.css`        |
 | `url`             | lazy  | yes     | `url.css`          |
 | `visibility-change` | lazy | yes    |                    |
+| `visibility-click` | lazy | yes     |                    |
 
 You can flip individual controllers to `"enabled": false` in
 `assets/controllers.json` if your application doesn't use them.
+
+### `visibility-click`
+
+Shows or hides display targets with a group of toggle buttons, for example
+the locale tabs of a translatable form. Clicking a control makes its `value`
+the active value; a display is visible when its `data-visibility-values` list
+contains that value.
+
+```twig
+<div data-controller="visibility-click">
+    {% for locale in ['nl', 'fr'] %}
+        <button type="button"
+                value="{{ locale }}"
+                aria-pressed="{{ loop.first ? 'true' : 'false' }}"
+                data-visibility-click-target="control"
+                data-action="visibility-click#select"
+                class="aria-pressed:bg-primary-90 aria-pressed:text-white">
+            {{ locale|upper }}
+        </button>
+    {% endfor %}
+
+    {% for locale in ['nl', 'fr'] %}
+        <div data-visibility-click-target="display"
+             data-visibility-values="{{ [locale]|json_encode }}"
+             class="{{ loop.first ? '' : 'hidden' }}">
+            {# fields for this locale #}
+        </div>
+    {% endfor %}
+
+    <input type="hidden" name="activeLocale" data-visibility-click-target="state">
+</div>
+```
+
+| Target    | Markup |
+|-----------|--------|
+| `control` | A `<button type="button">` with a non-empty `value` and `aria-pressed`, plus `data-action="visibility-click#select"`. The controls with the active value get `aria-pressed="true"`, all others `"false"`. |
+| `display` | Any element with `data-visibility-values`, a JSON list of values. It gets the `hidden` class unless the list contains the active value. Render the initial visibility server-side to avoid a flash. |
+| `state`   | Optional. An input that receives the active value, so a form submit can restore the selection server-side (in a form type: `'attr' => ['data-visibility-click-target' => 'state']`). |
+
+| Value           | Default                 | Description |
+|-----------------|-------------------------|-------------|
+| `active`        | `''`                    | The active value. When empty on connect, it is taken from the first control with `aria-pressed="true"`; when no control is pressed, the server-rendered visibility stays until a control is clicked. |
+| `refresh-event` | `collection-item-added` | Document event after which the active value is re-applied to all targets, for example when a live collection renders a new item. |
+
+Controls, displays and state inputs that are added later (a new collection
+item) follow the active value without an event. Instead of an action on every
+control, you can also put `data-action="click->visibility-click#select"` once
+on the controller element. A nested `visibility-click` controller keeps its
+own targets.
+
+**Migrating from a project's `visibility--click`**: rename
+`data-controller="visibility--click"` to `visibility-click` and add
+`data-action="visibility-click#select"` to the controls. The
+`data-visibility-click-target` and `data-visibility-values` attributes stay as
+they are. The `control-selector`, `display-selector` and `state-selector`
+values are gone: the targets replace them. Then remove
+`assets/controllers/visibility/click_controller.js`.
 
 ## Tailwind CSS
 

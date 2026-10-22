@@ -139,6 +139,12 @@
         "name": "visibility-change",
         "fetch": "lazy",
         "enabled": true
+      },
+      "visibility-click": {
+        "main": "src/visibility_click_controller.js",
+        "name": "visibility-click",
+        "fetch": "lazy",
+        "enabled": true
       }
     },
     "importmap": {
