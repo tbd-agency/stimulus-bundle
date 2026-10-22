@@ -58,6 +58,7 @@ namespace:
 | `modal`           | lazy  | yes     |                    |
 | `reset-search`    | lazy  | yes     |                    |
 | `resizable-table` | eager | yes     |                    |
+| `select`          | lazy  | no      | `tom-select.css`, `select.css` |
 | `select-items`    | lazy  | yes     | `select-items.css` |
 | `sidebar`         | lazy  | yes     |                    |
 | `sortable`        | eager | yes     |                    |
@@ -216,6 +217,212 @@ from another controller through
 Despite the name, `marker` is unrelated to `map`: it inserts text placeholders
 into an editor by dispatching `insert:marker` to the element its `target`
 selector points to. Enabling one does not require the other.
+## Select
+
+`select` turns a `<select>` into a [Tom Select](https://tom-select.js.org)
+field: searchable, with remove buttons for a multiple select, options loaded
+page by page from the server, and optionally a way to add new options.
+
+It is opt-in. Every TBD project still has its own `select` controller, and the
+Stimulus bridge registers this bundle's controllers after the ones in
+`assets/controllers/`. Enabled by default, it would replace the project's own
+controller on the next `composer update`. Enable it in
+`assets/controllers.json` once the project's copy is gone:
+
+```json
+"@tbd/stimulus-bundle": {
+    "select": {
+        "enabled": true,
+        "fetch": "lazy",
+        "autoimport": {
+            "tom-select/dist/css/tom-select.css": true,
+            "@tbd/stimulus-bundle/styles/select.css": true
+        }
+    }
+}
+```
+
+`tom-select` is a peer dependency, so Symfony Flex adds it to the project's
+`package.json`; run `npm install` after updating the bundle.
+
+`select.css` styles the field with the `tbd-*` colour tokens of
+`tbd/twig-component-bundle` v2, so light and dark mode follow the theme. A
+project without those tokens (still on v1 of that bundle) sets the
+`select.css` autoimport to `false` and keeps its own Tom Select styles.
+
+### Values
+
+| Value                   | Default                   | Purpose                                                                                                                                               |
+|-------------------------|---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `tom-select-options`    | `{}`                      | Tom Select settings as JSON, applied over the defaults. `options` and `optgroups` in it are pinned above the other options, `plugins` are added to the default plugins |
+| `tom-select-url`        | `''`                      | Loads the options from the server, see below                                                                                                          |
+| `tom-select-create-url` | `''`                      | Lets the user add an option: the controller posts `{"name": "…"}` as JSON and expects `{"id": …, "name": "…"}` back                                    |
+| `search-param`          | `query`                   | Query parameter that carries the search text to `tom-select-url`                                                                                      |
+| `min-query-length`      | `0`                       | Characters to type before the server is asked. With `0` the first page loads as soon as the field gets focus                                          |
+| `load-throttle`         | `300`                     | Milliseconds after the last keystroke before the server is asked                                                                                      |
+| `dropdown-parent`       | `body`                    | `body` renders the list in `<body>`, kept inside the viewport and flipped above the field when there is no room below. `''` renders it inside the field |
+| `lock`                  | `false`                   | Shows the value without letting the user change it. Follows changes of the attribute                                                                  |
+| `no-results-text`       | `No results found`        | Texts in the list; pass translations from the form extension                                                                                         |
+| `loading-more-text`     | `Loading more results...` |                                                                                                                                                       |
+| `create-text`           | `Add`                     | Shown before the typed text on the row that adds an option                                                                                            |
+
+Without any values, the field shows every option in the order the form
+renders them, with a clear button on a single select that is not required and
+remove buttons on a multiple select. The texts are always set as text, never
+as HTML.
+
+The controller has two actions for the form extension to wire up:
+
+| Action   | Wire it as                             | Purpose                                                                                                                  |
+|----------|----------------------------------------|--------------------------------------------------------------------------------------------------------------------------|
+| `sync`   | `select:change@document->select#sync`  | Rereads the options and selection, e.g. after a Live Component changed them and called `dispatchBrowserEvent('select:change')` |
+| `invalid` | `invalid->select#invalid`             | When browser validation blocks a submit, focuses the field and shows its error state, which the hidden select cannot     |
+
+### Remote options
+
+With `tom-select-url`, the controller asks
+`{url}?page=1&query={text}` and expects:
+
+```json
+{"items": [{"value": "12", "text": "Alpha"}], "nextPageUrl": "/users/search?page=2&query=al"}
+```
+
+`nextPageUrl` is loaded when the user scrolls to the end of the list; leave
+it out or `null` on the last page. Give the field `choice_lazy` (the form
+extension below does), so the page only renders the selected choices.
+`choice_lazy` accepts any choice the field's choice loader knows, so limit
+the field's `query_builder` to what the endpoint may return.
+
+### Hooking it to every select
+
+The form extension stays in the project for now. Based on element-cts:
+
+```php
+<?php
+
+namespace App\Form\Extension;
+
+use Symfony\Component\Form\AbstractTypeExtension;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
+final class ChoiceTypeExtension extends AbstractTypeExtension
+{
+    public function __construct(private readonly TranslatorInterface $translator)
+    {
+    }
+
+    // EntityType, EnumType, CountryType … extend ChoiceType and get this extension through it;
+    // listing them here as well would run it twice for those fields
+    public static function getExtendedTypes(): iterable
+    {
+        return [ChoiceType::class];
+    }
+
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'tom_select' => true,
+            'tom_select_options' => [],
+            'tom_select_url' => null,
+            'tom_select_create_url' => null,
+        ]);
+        $resolver->setAllowedTypes('tom_select', 'bool');
+        $resolver->setAllowedTypes('tom_select_options', 'array');
+        $resolver->setAllowedTypes('tom_select_url', ['null', 'string']);
+        $resolver->setAllowedTypes('tom_select_create_url', ['null', 'string']);
+
+        // A remote select only renders the selected choices, the others are searched through tom_select_url
+        $resolver->addNormalizer('choice_lazy', static fn (Options $options, bool $value): bool => null !== $options['tom_select_url'] || $value);
+    }
+
+    public function finishView(FormView $view, FormInterface $form, array $options): void
+    {
+        if ($view->vars['expanded'] || !$options['tom_select']) {
+            return;
+        }
+
+        $attr = $view->vars['attr'];
+        $attr['autocomplete'] = 'off';
+        // A Live Component re-render replaces the options instead of morphing them; select:change then syncs Tom Select
+        $attr['data-skip-morph'] = true;
+        $attr['data-controller'] = trim(($attr['data-controller'] ?? '').' select');
+        $attr['data-action'] = trim(($attr['data-action'] ?? '').' select:change@document->select#sync invalid->select#invalid');
+
+        if ([] !== $options['tom_select_options']) {
+            $attr['data-select-tom-select-options-value'] = json_encode($options['tom_select_options'], \JSON_THROW_ON_ERROR);
+        }
+
+        if (null !== $options['tom_select_url']) {
+            $attr['data-select-tom-select-url-value'] = $options['tom_select_url'];
+        }
+
+        if (null !== $options['tom_select_create_url']) {
+            $attr['data-select-tom-select-create-url-value'] = $options['tom_select_create_url'];
+        }
+
+        // Tom Select shows the empty option as its placeholder, also on a multiple select
+        if (empty($view->vars['placeholder'])) {
+            $view->vars['placeholder'] = $this->translator->trans('label.select');
+        }
+
+        $view->vars['attr'] = $attr;
+    }
+}
+```
+
+A form then only sets what differs for a field:
+
+```php
+$builder->add('owner', EntityType::class, [
+    'class' => User::class,
+    'tom_select_url' => $this->urlGenerator->generate('user_search'),
+    'tom_select_options' => ['plugins' => ['dropdown_input']],
+    'attr' => ['data-select-min-query-length-value' => 2],
+]);
+```
+
+Settings that hold for every select of a project, such as translated texts
+or `data-select-search-param-value`, go in the extension's `finishView()`.
+
+### Overriding it in a project
+
+A project that needs its own behaviour keeps `"enabled": false` for `select`
+and registers its own `assets/controllers/select_controller.js`. That file can
+extend this controller and change only what differs, through `settings()`:
+
+```js
+import SelectController from '@tbd/stimulus-bundle/src/select_controller.js'
+
+/* stimulusFetch: 'lazy' */
+export default class extends SelectController {
+    settings() {
+        const settings = super.settings()
+
+        // Option data is set as text, never as HTML
+        settings.render.option = (item) => {
+            const option = document.createElement('div')
+            option.append(this.textElement('font-semibold', item.text), this.textElement('text-xs', item.city ?? ''))
+
+            return option
+        }
+
+        return settings
+    }
+}
+```
+
+A disabled controller brings no autoimports, so that project imports the
+styles itself, e.g. in `assets/app.js`:
+
+```js
+import 'tom-select/dist/css/tom-select.css';
+import '@tbd/stimulus-bundle/styles/select.css';
+```
 
 ## Tailwind CSS
 

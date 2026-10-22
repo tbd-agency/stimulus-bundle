@@ -98,6 +98,16 @@
         "fetch": "eager",
         "enabled": false
       },
+      "select": {
+        "main": "src/select_controller.js",
+        "name": "select",
+        "fetch": "lazy",
+        "enabled": false,
+        "autoimport": {
+          "tom-select/dist/css/tom-select.css": true,
+          "@tbd/stimulus-bundle/styles/select.css": true
+        }
+      },
       "select-items": {
         "main": "src/select_items_controller.js",
         "name": "select-items",
@@ -161,6 +171,7 @@
       "@hotwired/turbo": "^7.3.0 || ^8.0.0",
       "chart.js/auto": "^3.4.1 || ^4.0.0",
       "js-cookie": "^3.0.5",
+      "tom-select": "^2.3.1",
       "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
       "@popperjs/core": "^2.11.8",
       "flatpickr": "^4.6.13",
@@ -174,6 +185,7 @@
     "@hotwired/turbo": "^7.3.0 || ^8.0.0",
     "chart.js": "^3.4.1 || ^4.0.0",
     "js-cookie": "^3.0.5",
+    "tom-select": "^2.3.1",
     "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
     "@popperjs/core": "^2.11.8",
     "flatpickr": "^4.6.13",
@@ -186,6 +198,7 @@
     "@hotwired/turbo": "^7.3.0 || ^8.0.0",
     "chart.js": "^3.4.1 || ^4.0.0",
     "js-cookie": "^3.0.5",
+    "tom-select": "^2.3.1",
     "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
     "@popperjs/core": "^2.11.8",
     "flatpickr": "^4.6.13",

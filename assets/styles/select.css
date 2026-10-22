@@ -1,0 +1,236 @@
+/*
+ * Restyles Tom Select (select controller) on top of tom-select/dist/css/tom-select.css, with the tbd-* colour tokens
+ * of tbd/twig-component-bundle v2. Those switch value under html.dark, so nothing here needs a dark: variant.
+ *
+ * This file is compiled on its own, without the project's theme, so @apply only knows Tailwind's own utilities and
+ * the colours are var() lookups instead. Tailwind only emits the tokens a project uses; every token below is also
+ * used by the components of tbd/twig-component-bundle, so it is there in any project that scans that bundle.
+ */
+@reference "tailwindcss";
+
+/* Hidden by attribute rather than by Tom Select's classes, which a Live Component re-render strips,
+   and already before the lazy controller has loaded */
+select[data-controller~='select'] {
+    display: none;
+}
+
+/* Tom Select copies the classes of the select onto its wrapper. The control draws the field,
+   so the wrapper drops the border, padding and background those classes may give it */
+.ts-wrapper {
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+.ts-dropdown,
+.ts-control,
+.ts-control input {
+    @apply text-sm;
+    color: var(--color-tbd-ink);
+}
+
+/* Control */
+
+.ts-control,
+.ts-wrapper.multi.has-items .ts-control {
+    @apply gap-1 rounded-lg p-2.5;
+    border-color: var(--color-tbd-line);
+}
+
+.ts-control,
+.ts-wrapper.single.input-active .ts-control {
+    background-color: var(--color-tbd-surface);
+}
+
+.ts-wrapper.focus .ts-control {
+    border-color: var(--color-tbd-accent);
+    box-shadow: 0 0 0 1px var(--color-tbd-accent);
+}
+
+/* A required select left empty after a submit attempt, or a select the server rejected */
+.ts-wrapper.invalid.show-invalid .ts-control,
+select[aria-invalid='true'] + .ts-wrapper .ts-control {
+    border-color: var(--color-tbd-danger-ink);
+    background-color: var(--color-tbd-danger-soft);
+}
+
+.ts-wrapper.locked .ts-control {
+    background-color: var(--color-tbd-tint);
+    color: var(--color-tbd-ink-muted);
+}
+
+.ts-wrapper.locked .ts-control,
+.ts-wrapper.locked .ts-control > input {
+    cursor: not-allowed;
+}
+
+.ts-wrapper.locked .clear-button,
+.ts-wrapper.locked .item .remove {
+    display: none;
+}
+
+.ts-control > input::placeholder {
+    color: var(--color-tbd-ink-subtle);
+    opacity: 1;
+}
+
+.ts-wrapper.has-items .ts-control > input::placeholder {
+    opacity: 0;
+}
+
+/* The caret of a native select */
+.ts-wrapper.single {
+    --ts-pr-caret: 2rem;
+}
+
+.ts-wrapper.single .ts-control::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0.875rem;
+    width: 0.625rem;
+    height: 0.375rem;
+    transform: translateY(-50%);
+    background-color: var(--color-tbd-ink-muted);
+    mask: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 10 6'%3e%3cpath stroke='black' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 1 4 4 4-4'/%3e%3c/svg%3e") center / contain no-repeat;
+}
+
+.ts-wrapper.plugin-clear_button .clear-button {
+    @apply text-base;
+    color: var(--color-tbd-ink-muted);
+}
+
+.ts-wrapper.plugin-clear_button .clear-button:hover {
+    color: var(--color-tbd-ink);
+}
+
+/* Items of a multiple select, like the gray badge of tbd/twig-component-bundle */
+
+.ts-wrapper.multi .ts-control > div {
+    @apply m-0 rounded-full px-2 py-0.5 text-xs font-medium;
+    background-color: var(--color-tbd-tint-strong);
+    color: var(--color-tbd-ink);
+}
+
+.ts-wrapper.multi .ts-control > div.active {
+    background-color: color-mix(in oklab, var(--color-tbd-accent) 15%, transparent);
+    color: var(--color-tbd-accent-strong);
+}
+
+.ts-wrapper.plugin-remove_button:not(.rtl) .item .remove {
+    @apply ms-1;
+    border-left: 0;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove {
+    @apply rounded-full px-1;
+}
+
+.ts-wrapper.plugin-remove_button .item .remove:hover {
+    background-color: var(--color-tbd-tint-strong);
+}
+
+/* Dropdown, like the dropdowns of tbd/twig-component-bundle. The select controller positions it and
+   measures its height on .ts-dropdown-content, so that element carries the border */
+
+.ts-dropdown {
+    z-index: 70;
+    margin: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+}
+
+/* With dropdown-parent '' the list sits inside the field and is positioned by CSS */
+.ts-wrapper > .ts-dropdown {
+    @apply mt-1;
+}
+
+.ts-dropdown-content {
+    @apply rounded-lg;
+    border: 1px solid var(--color-tbd-line);
+    background-color: var(--color-tbd-surface);
+    box-shadow: 2px 4px 20px rgb(18 37 60 / 0.15);
+    overscroll-behavior: contain;
+    /* The select controller lowers this to the space available in the viewport */
+    max-height: var(--ts-dropdown-max-height, 20rem);
+}
+
+/* 36px high, the option height the select controller counts with */
+.ts-dropdown .option,
+.ts-dropdown .create,
+.ts-dropdown .no-results {
+    @apply px-3 py-2;
+}
+
+.ts-dropdown .active {
+    background-color: var(--color-tbd-tint);
+    color: var(--color-tbd-ink);
+}
+
+.ts-dropdown .selected {
+    background-color: color-mix(in oklab, var(--color-tbd-accent) 15%, transparent);
+    color: var(--color-tbd-accent-strong);
+}
+
+.ts-dropdown .active.selected {
+    background-color: color-mix(in oklab, var(--color-tbd-accent) 25%, transparent);
+}
+
+.ts-dropdown [data-selectable] .highlight {
+    background-color: color-mix(in oklab, var(--color-tbd-gold) 35%, transparent);
+    color: inherit;
+}
+
+.ts-dropdown .optgroup-header {
+    @apply px-3 pt-2 pb-1 text-xs font-semibold uppercase;
+    background-color: var(--color-tbd-surface);
+    color: var(--color-tbd-ink-muted);
+}
+
+.ts-dropdown .optgroup:not(:last-child) {
+    @apply mb-1 pb-1;
+    border-bottom: 1px solid var(--color-tbd-line);
+}
+
+.ts-dropdown .create,
+.ts-dropdown .no-results,
+.ts-dropdown .loading-more-results {
+    color: var(--color-tbd-ink-muted);
+}
+
+.ts-dropdown .active.create {
+    color: var(--color-tbd-ink);
+}
+
+.ts-dropdown .spinner::after {
+    border-color: var(--color-tbd-ink-subtle) transparent;
+}
+
+.plugin-dropdown_input .dropdown-input,
+.plugin-dropdown_input.focus.dropdown-active .ts-control {
+    border-color: var(--color-tbd-line);
+}
+
+.plugin-dropdown_input .dropdown-input {
+    @apply px-3 py-2 text-sm;
+    color: var(--color-tbd-ink);
+}
+
+.plugin-dropdown_input .dropdown-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.plugin-dropdown_input .dropdown-input::placeholder {
+    color: var(--color-tbd-ink-subtle);
+    opacity: 1;
+}
+
+/* Leaves only the chosen value on paper, without the placeholder of the search input */
+@media print {
+    .ts-wrapper .ts-control > input {
+        display: none !important;
+    }
+}
