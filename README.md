@@ -53,6 +53,7 @@ namespace:
 | `dropdown`        | lazy  | yes     |                    |
 | `flatpickr`       | lazy  | yes     | `flatpickr.css`    |
 | `inline-edit`     | lazy  | yes     |                    |
+| `map`             | lazy  | no      | `leaflet.css`      |
 | `marker`          | lazy  | yes     |                    |
 | `modal`           | lazy  | yes     |                    |
 | `reset-search`    | lazy  | yes     |                    |
@@ -124,6 +125,97 @@ own targets.
 they are. The `control-selector`, `display-selector` and `state-selector`
 values are gone: the targets replace them. Then remove
 `assets/controllers/visibility/click_controller.js`.
+## Map
+
+`map` renders a [Leaflet](https://leafletjs.com) map with markers. It is
+opt-in: install Leaflet and enable the controller in
+`assets/controllers.json`. The Leaflet stylesheet comes in through
+`autoimport`, so the project does not import it itself.
+
+```bash
+npm install leaflet
+```
+
+```json
+"@tbd/stimulus-bundle": {
+    "map": {
+        "enabled": true,
+        "fetch": "lazy",
+        "autoimport": {
+            "leaflet/dist/leaflet.css": true
+        }
+    }
+}
+```
+
+A project that needs its own map behaviour keeps `"enabled": false` and
+registers its own `assets/controllers/map_controller.js` under the same name.
+
+```twig
+<div class="h-[30vh]"
+     data-controller="map"
+     data-map-markers-value="{{ markers|json_encode }}">
+    <template data-map-target="icon">
+        {{ ux_icon('solid:location-dot', {class: 'size-5 text-tbd-accent'}) }}
+    </template>
+</div>
+```
+
+| Value          | Default                                       | Purpose                                                                                     |
+|----------------|-----------------------------------------------|---------------------------------------------------------------------------------------------|
+| `markers`      | `[]`                                          | The markers, see below                                                                      |
+| `center`       | `[50.8387917, 4.3630185]` (Brussels)          | `[lat, lng]` shown when there are no markers                                                |
+| `zoom`         | `16`                                          | Zoom level used with `center`                                                               |
+| `fit-max-zoom` | `16`                                          | Highest zoom level when the map fits itself to the markers, e.g. for a single marker        |
+| `min-zoom`     | `2`                                           |                                                                                             |
+| `max-zoom`     | `18`                                          | Also the tile layer's maximum; lower it for tile servers that stop earlier                  |
+| `tile-url`     | Stadia Maps "outdoors"                        | Leaflet tile URL template. Stadia needs the domain or an API key registered with them       |
+| `attribution`  | `© Stadia Maps © OpenMapTiles © OpenStreetMap` | Plain text, never HTML. For links, use an `attribution` template instead                    |
+| `marker-click` | `visit`                                       | `visit`, `popup` or `none`, see below                                                       |
+
+Each marker is an object; only `lat` and `lng` are required:
+
+```json
+[
+    {"lat": 50.8388, "lng": 4.3630, "name": "Head office", "url": "/offices/1", "icon": "office", "color": "var(--color-orange-400)", "radius": 250}
+]
+```
+
+| Key          | Meaning                                                                                            |
+|--------------|----------------------------------------------------------------------------------------------------|
+| `lat`, `lng` | Numbers or numeric strings. Markers without valid coordinates are skipped                          |
+| `name`       | Popup text, shown on hover (on click with `marker-click: popup`). Always text: HTML is shown as-is |
+| `url`        | Where `marker-click: visit` goes. Only `http(s)` URLs are followed                                 |
+| `icon`       | Name of the icon template to use (`data-map-icon`); defaults to the first icon template            |
+| `color`      | CSS colour set as `color` on the cloned icon, for icons drawn in `currentColor`                    |
+| `radius`     | Radius in metres; draws a circle around the marker when greater than 0                             |
+
+Markup never comes from values. The controller clones it from `<template>`
+targets that Twig rendered and escaped:
+
+- `icon`: one root element, usually an icon. Add `data-map-icon="office"` to
+  pick it per marker with `icon`. Without an icon template, markers are plain
+  Leaflet circle markers.
+- `popup`: one root element. Descendants with `data-map-field="name"` get that
+  marker key as text. Without it, the popup is the `name` as text.
+- `attribution`: the attribution with links, e.g.
+  `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`.
+
+On a marker click, the controller dispatches a cancelable `map:marker-click`
+event with the marker in `event.detail.marker`, then acts on `marker-click`:
+`visit` makes a Turbo visit to the marker's `url` (ctrl/cmd-click opens a new
+tab), `popup` only opens the popup, `none` leaves it to the event. Calling
+`event.preventDefault()` in a `data-action="map:marker-click->…"` handler stops
+the visit.
+
+A map that was hidden while it connected has the wrong size. Call
+`invalidateSize` after showing it: as an action on the event that shows it, or
+from another controller through
+`this.application.getControllerForElementAndIdentifier(element, 'map')`.
+
+Despite the name, `marker` is unrelated to `map`: it inserts text placeholders
+into an editor by dispatching `insert:marker` to the element its `target`
+selector points to. Enabling one does not require the other.
 
 ## Tailwind CSS
 
