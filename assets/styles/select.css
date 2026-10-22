@@ -38,9 +38,15 @@ select[data-controller~='select'] {
     border-color: var(--color-tbd-line);
 }
 
+/* Tom Select gives a full select (a single select with its value chosen) its own white background */
 .ts-control,
+.full .ts-control,
 .ts-wrapper.single.input-active .ts-control {
     background-color: var(--color-tbd-surface);
+}
+
+.disabled .ts-control {
+    background-color: var(--color-tbd-tint);
 }
 
 .ts-wrapper.focus .ts-control {
