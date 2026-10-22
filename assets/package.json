@@ -133,6 +133,12 @@
         "autoimport": {
           "@tbd/stimulus-bundle/styles/url.css": true
         }
+      },
+      "visibility-change": {
+        "main": "src/visibility_change_controller.js",
+        "name": "visibility-change",
+        "fetch": "lazy",
+        "enabled": true
       }
     },
     "importmap": {
