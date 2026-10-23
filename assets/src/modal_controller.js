@@ -4,13 +4,18 @@ import {Controller} from '@hotwired/stimulus'
 export default class extends Controller {
     setSrc(event) {
         const trigger = event?.currentTarget
-        const targetValue = trigger?.dataset?.target
-        const sizeValue = trigger?.dataset?.size ?? 'md'
-        const titleValue = trigger?.dataset?.title
-        const srcValue = trigger?.dataset?.src
-        const frameValue = trigger?.dataset?.frame ?? 'source-frame'
+        const values = {...trigger?.dataset, ...event?.detail}
+        const targetValue = values.target
+        const sizeValue = values.size ?? 'md'
+        const titleValue = values.title
+        const srcValue = values.src
+        const frameValue = values.frame ?? 'source-frame'
 
         let target = document.getElementById(targetValue)
+        if (!target || !document.getElementById(frameValue)) {
+            return
+        }
+
         let options = {
             closable: false,
             backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-60',
@@ -60,20 +65,31 @@ export default class extends Controller {
     }
 
     connect() {
-        document.addEventListener('close:modal', this.close.bind(this))
+        this.boundSetSrc = this.setSrc.bind(this)
+        this.boundOpen = this.open.bind(this)
+        this.boundClose = this.close.bind(this)
+        document.addEventListener('load:modal', this.boundSetSrc)
+        document.addEventListener('open:modal', this.boundOpen)
+        document.addEventListener('close:modal', this.boundClose)
     }
 
     disconnect() {
-        document.removeEventListener('close:modal', this.close.bind(this))
+        document.removeEventListener('load:modal', this.boundSetSrc)
+        document.removeEventListener('open:modal', this.boundOpen)
+        document.removeEventListener('close:modal', this.boundClose)
     }
 
     open(event) {
         const trigger = event?.currentTarget
-        const targetValue = trigger?.dataset?.target
-        const actionValue = trigger?.dataset?.formAction
+        const targetValue = event?.detail?.target ?? trigger?.dataset?.target
+        const actionValue = event?.detail?.formAction ?? trigger?.dataset?.formAction
         let target = document.getElementById(targetValue)
 
-        if (target && actionValue) {
+        if (!target) {
+            return
+        }
+
+        if (actionValue) {
             let form = target.querySelector('form')
             if (form) form.setAttribute('action', actionValue)
         }
@@ -113,6 +129,10 @@ export default class extends Controller {
 
         if (!modal) {
             const target = document.getElementById(targetValue)
+            if (!target) {
+                return
+            }
+
             modal = new Modal(target)
         }
 
