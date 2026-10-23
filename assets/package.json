@@ -65,6 +65,15 @@
         "fetch": "lazy",
         "enabled": false
       },
+      "map": {
+        "main": "src/map_controller.js",
+        "name": "map",
+        "fetch": "lazy",
+        "enabled": false,
+        "autoimport": {
+          "leaflet/dist/leaflet.css": true
+        }
+      },
       "marker": {
         "main": "src/marker_controller.js",
         "name": "marker",
@@ -88,6 +97,16 @@
         "name": "resizable-table",
         "fetch": "eager",
         "enabled": false
+      },
+      "select": {
+        "main": "src/select_controller.js",
+        "name": "select",
+        "fetch": "lazy",
+        "enabled": false,
+        "autoimport": {
+          "tom-select/dist/css/tom-select.css": true,
+          "@tbd/stimulus-bundle/styles/select.css": true
+        }
       },
       "select-items": {
         "main": "src/select_items_controller.js",
@@ -119,6 +138,15 @@
           "@tbd/stimulus-bundle/styles/theme.css": true
         }
       },
+      "tinymce": {
+        "main": "src/tinymce_controller.js",
+        "name": "tinymce",
+        "fetch": "lazy",
+        "enabled": false,
+        "autoimport": {
+          "@tbd/stimulus-bundle/styles/tinymce.css": true
+        }
+      },
       "tooltip": {
         "main": "src/tooltip_controller.js",
         "name": "tooltip",
@@ -133,6 +161,18 @@
         "autoimport": {
           "@tbd/stimulus-bundle/styles/url.css": true
         }
+      },
+      "visibility-change": {
+        "main": "src/visibility_change_controller.js",
+        "name": "visibility-change",
+        "fetch": "lazy",
+        "enabled": true
+      },
+      "visibility-click": {
+        "main": "src/visibility_click_controller.js",
+        "name": "visibility-click",
+        "fetch": "lazy",
+        "enabled": true
       }
     },
     "importmap": {
@@ -140,9 +180,11 @@
       "@hotwired/turbo": "^7.3.0 || ^8.0.0",
       "chart.js/auto": "^3.4.1 || ^4.0.0",
       "js-cookie": "^3.0.5",
+      "tom-select": "^2.3.1",
       "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
       "@popperjs/core": "^2.11.8",
       "flatpickr": "^4.6.13",
+      "leaflet": "^1.9.4",
       "sortablejs": "^1.15.0",
       "@symfony/ux-live-component": "^2.0.0"
     }
@@ -152,10 +194,13 @@
     "@hotwired/turbo": "^7.3.0 || ^8.0.0",
     "chart.js": "^3.4.1 || ^4.0.0",
     "js-cookie": "^3.0.5",
+    "tom-select": "^2.3.1",
     "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
     "@popperjs/core": "^2.11.8",
     "flatpickr": "^4.6.13",
+    "leaflet": "^1.9.4",
     "sortablejs": "^1.15.0",
+    "tinymce": "^7.0.0 || ^8.0.0",
     "@symfony/ux-live-component": "^2.0.0"
   },
   "peerDependencies": {
@@ -163,10 +208,13 @@
     "@hotwired/turbo": "^7.3.0 || ^8.0.0",
     "chart.js": "^3.4.1 || ^4.0.0",
     "js-cookie": "^3.0.5",
+    "tom-select": "^2.3.1",
     "flowbite": "^2.0.0 || ^3.0.0 || ^4.0.0",
     "@popperjs/core": "^2.11.8",
     "flatpickr": "^4.6.13",
+    "leaflet": "^1.9.4",
     "sortablejs": "^1.15.0",
+    "tinymce": "^7.0.0 || ^8.0.0",
     "@symfony/ux-live-component": "^2.0.0"
   }
 }
