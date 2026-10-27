@@ -34,7 +34,7 @@ select[data-controller~='select'] {
 
 .ts-control,
 .ts-wrapper.multi.has-items .ts-control {
-    @apply gap-1 rounded-lg p-2.5;
+    @apply gap-1 rounded p-2.5;
     border-color: var(--color-tbd-line);
 }
 
@@ -154,7 +154,7 @@ select[aria-invalid='true'] + .ts-wrapper .ts-control {
 }
 
 .ts-dropdown-content {
-    @apply rounded-lg;
+    @apply rounded;
     border: 1px solid var(--color-tbd-line);
     background-color: var(--color-tbd-surface);
     box-shadow: 2px 4px 20px rgb(18 37 60 / 0.15);
