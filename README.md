@@ -71,6 +71,29 @@ namespace:
 You can flip individual controllers to `"enabled": false` in
 `assets/controllers.json` if your application doesn't use them.
 
+### `chart`
+
+Renders a Chart.js chart from a Symfony UX Chart.js `chart.createView` in the
+`settings` value, with an HTML legend and optional click-through `routes`.
+Colours follow light and dark mode and update on the `theme:changed` event:
+
+| Value                        | Default   | Applies to                        |
+|------------------------------|-----------|-----------------------------------|
+| `data-chart-light-color-value`      | none      | labels, ticks and titles in light mode |
+| `data-chart-dark-color-value`       | none      | labels, ticks and titles in dark mode  |
+| `data-chart-light-grid-color-value` | `#e5e7eb` | grid lines and axis borders in light mode |
+| `data-chart-dark-grid-color-value`  | `#364153` | grid lines and axis borders in dark mode  |
+
+Without the label colours, Chart.js keeps its own label colour; the grid
+colours always apply, because Chart.js's default grid (black at 10%) disappears
+on a dark background.
+
+```twig
+<div data-controller="chart"
+     data-chart-settings-value="{{ chart.createView|json_encode }}"
+     data-chart-dark-grid-color-value="#4b5563">
+```
+
 ### `map`
 
 `map` renders a [Leaflet](https://leafletjs.com) map with markers. It is

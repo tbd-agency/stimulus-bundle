@@ -9,12 +9,14 @@ export default class extends Controller {
         settings: Object,
         lightColor: String,
         darkColor: String,
+        lightGridColor: {type: String, default: '#e5e7eb'},
+        darkGridColor: {type: String, default: '#364153'},
     }
 
     connect() {
         let settings = this.settingsValue
 
-        this.applyLabelColor(settings.options)
+        this.applyThemeColors(settings.options)
 
         if (this.hasRoutesValue) {
             settings.options.onClick = (event, item) => {
@@ -73,14 +75,12 @@ export default class extends Controller {
 
         this.chart = new Chart(this.canvasTarget, settings)
 
-        if (this.hasLightColorValue || this.hasDarkColorValue) {
-            this.handleThemeChanged = () => {
-                this.applyLabelColor(this.chart.config.options)
-                this.chart.update()
-            }
-
-            document.addEventListener('theme:changed', this.handleThemeChanged)
+        this.handleThemeChanged = () => {
+            this.applyThemeColors(this.chart.config.options)
+            this.chart.update()
         }
+
+        document.addEventListener('theme:changed', this.handleThemeChanged)
     }
 
     disconnect() {
@@ -99,10 +99,15 @@ export default class extends Controller {
             : this.lightColorValue || null
     }
 
-     gridColor() {
+    gridColor() {
         return document.documentElement.classList.contains('dark')
-            ? 'rgba(255, 255, 255, 0.1)'
-            : 'rgba(0, 0, 0, 0.1)'
+            ? this.darkGridColorValue
+            : this.lightGridColorValue
+    }
+
+    applyThemeColors(options) {
+        this.applyLabelColor(options)
+        this.applyGridColor(options)
     }
 
     applyLabelColor(options) {
@@ -113,16 +118,22 @@ export default class extends Controller {
         }
 
         options.color = color
-        const gridColor = this.gridColor()
 
         Object.values(options.scales ?? {}).forEach((scale) => {
             scale.ticks = Object.assign({}, scale.ticks, {color: color})
-            scale.grid = Object.assign({}, scale.grid, {color: gridColor})
-            scale.border = Object.assign({}, scale.border, {color: gridColor})
 
             if (scale.title) {
                 scale.title.color = color
             }
+        })
+    }
+
+    applyGridColor(options) {
+        const color = this.gridColor()
+
+        Object.values(options.scales ?? {}).forEach((scale) => {
+            scale.grid = Object.assign({}, scale.grid, {color: color})
+            scale.border = Object.assign({}, scale.border, {color: color})
         })
     }
 }
