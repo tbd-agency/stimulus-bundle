@@ -20,10 +20,11 @@ export default class extends Controller {
                 if (input.tagName === 'SELECT') {
                     input.selectedIndex = -1
 
-                    let clearButton = input.nextElementSibling.querySelector('.clear-button')
+                    // A plain select (no Tom Select wrapper) can be the last element of its row
+                    let clearButton = input.nextElementSibling?.querySelector('.clear-button')
                     if (clearButton) clearButton.click()
 
-                    let removeButtons = input.nextElementSibling.querySelectorAll('.remove')
+                    let removeButtons = input.nextElementSibling?.querySelectorAll('.remove')
                     if (removeButtons) {
                         removeButtons.forEach(removeButton => {
                             removeButton.click()
