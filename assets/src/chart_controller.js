@@ -99,6 +99,12 @@ export default class extends Controller {
             : this.lightColorValue || null
     }
 
+     gridColor() {
+        return document.documentElement.classList.contains('dark')
+            ? 'rgba(255, 255, 255, 0.1)'
+            : 'rgba(0, 0, 0, 0.1)'
+    }
+
     applyLabelColor(options) {
         const color = this.labelColor()
 
@@ -107,9 +113,12 @@ export default class extends Controller {
         }
 
         options.color = color
+        const gridColor = this.gridColor()
 
         Object.values(options.scales ?? {}).forEach((scale) => {
             scale.ticks = Object.assign({}, scale.ticks, {color: color})
+            scale.grid = Object.assign({}, scale.grid, {color: gridColor})
+            scale.border = Object.assign({}, scale.border, {color: gridColor})
 
             if (scale.title) {
                 scale.title.color = color
