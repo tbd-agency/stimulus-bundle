@@ -1,6 +1,5 @@
 import {Controller} from '@hotwired/stimulus';
 import {Dropdown} from 'flowbite';
-import {createPopper} from "@popperjs/core";
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -44,17 +43,18 @@ export default class extends Controller {
             override: true
         };
 
-        new Dropdown(target, trigger, options, instanceOptions);
+        let dropdown = new Dropdown(target, trigger, options, instanceOptions);
 
         if (this.hasContentTarget) {
-            createPopper(this.buttonTarget, this.contentTarget, {
-                placement: this.placementValue,
+            dropdown._popperInstance.setOptions(popperOptions => ({
+                ...popperOptions,
                 strategy: 'fixed',
                 modifiers: [
+                    ...popperOptions.modifiers,
                     {name: 'flip'},
                     {name: 'preventOverflow', options: {padding: 8, altAxis: true, tether: true}},
                 ]
-            })
+            }))
 
             document.body.appendChild(this.contentTarget)
         }
