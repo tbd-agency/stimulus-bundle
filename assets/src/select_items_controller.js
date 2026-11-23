@@ -38,8 +38,21 @@ export default class extends Controller {
             this.reset();
         };
 
+        // A popper dropdown nested in the select menu (TBD:Dropdown:MultiLevel) is moved to the body,
+        // out of this controller's scope, so the click action on its items never reaches handle()
+        this.handleDetachedItem = (event) => {
+            let item = event.target.closest('[data-action~="click->select-items#handle"]');
+
+            if (!item || this.element.contains(item) || !this.ownsDetachedItem(item)) {
+                return;
+            }
+
+            this.submit(item, false);
+        };
+
         document.addEventListener('keydown', this.trackShift);
         document.addEventListener('keyup', this.trackShift);
+        document.addEventListener('click', this.handleDetachedItem);
         window.addEventListener('blur', this.releaseShift);
         this.element.addEventListener('focusout', this.clearAnchor);
         this.element.addEventListener('turbo:submit-end', this.resetOnAction);
@@ -48,9 +61,18 @@ export default class extends Controller {
     disconnect() {
         document.removeEventListener('keydown', this.trackShift);
         document.removeEventListener('keyup', this.trackShift);
+        document.removeEventListener('click', this.handleDetachedItem);
         window.removeEventListener('blur', this.releaseShift);
         this.element.removeEventListener('focusout', this.clearAnchor);
         this.element.removeEventListener('turbo:submit-end', this.resetOnAction);
+    }
+
+    ownsDetachedItem(item) {
+        return [...this.element.querySelectorAll('[data-dropdown-target-value]')].some((dropdown) => {
+            let content = document.getElementById(dropdown.dataset.dropdownTargetValue);
+
+            return content && !this.element.contains(content) && content.contains(item);
+        });
     }
 
     reset() {
@@ -199,6 +221,10 @@ export default class extends Controller {
             eventTarget = document.getElementById(event.detail.frame);
         }
 
+        this.submit(eventTarget, inFrame);
+    }
+
+    submit(eventTarget, inFrame) {
         let form = eventTarget.querySelector('form');
         let inputs = eventTarget.querySelectorAll('.selectedItems');
         let selectAll = eventTarget.querySelectorAll('.selectAll');
