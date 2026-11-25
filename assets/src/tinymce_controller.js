@@ -27,6 +27,7 @@ export default class extends Controller {
         skin: {type: String, default: 'tinymce-5'},
         baseUrl: {type: String, default: '/build/tinymce'},
         options: {type: Object, default: {}},
+        uploadFailedText: {type: String, default: 'Upload failed.'},
     }
 
     connect() {
@@ -190,7 +191,7 @@ export default class extends Controller {
 
         const editor = this.editors.get(textarea)
         editor?.notificationManager.open({
-            text: message || editor.translate('Upload failed.'),
+            text: message || editor.translate(this.uploadFailedTextValue),
             type: 'error',
             timeout: 5000,
         })

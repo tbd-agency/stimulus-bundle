@@ -480,6 +480,7 @@ served, which `importmap:require` does not do.
 | `skin`         | `tinymce-5`                                              | TinyMCE skin. Dark mode uses `<skin>-dark`.                                                         |
 | `baseUrl`      | `/build/tinymce`                                         | Where the copied TinyMCE package is served.                                                         |
 | `options`      | `{}`                                                     | Any other [TinyMCE option](https://www.tiny.cloud/docs/tinymce/latest/editor-important-options/), as JSON. Wins over the values above. |
+| `uploadFailedText` | `Upload failed.`                                     | Shown when an upload fails without a message from `uploadPath`, e.g. a network error.               |
 
 Besides these values, the controller always sets what the projects shared:
 `toolbar_mode: 'sliding'`, no branding, and absolute URLs including the host
@@ -497,7 +498,7 @@ It also has two actions:
 
 **Upload.** The image is posted as the `upload` field to `uploadPath`, which
 answers `{"url": "…"}`, or `{"error": {"message": "…"}}` with an error status.
-The message is shown in the editor.
+The message is shown in the editor; without one, `uploadFailedText` is.
 
 **Dark mode.** The editors follow the `dark` class on `<html>`: when it
 changes, they restart with the dark skin, and the content iframe gets the
