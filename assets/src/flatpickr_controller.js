@@ -1,11 +1,13 @@
 import {Controller} from '@hotwired/stimulus'
 import flatpickr from 'flatpickr'
+import weekSelect from 'flatpickr/dist/plugins/weekSelect/weekSelect'
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static values = {
         dateFormat: {type: String, default: 'd-m-Y'},
         enableTime: {type: Boolean, default: false},
+        timeOnly: {type: Boolean, default: false},
         minDateToday: {type: Boolean, default: false},
         maxDateToday: {type: Boolean, default: false},
         minDate: {type: String, default: ''},
@@ -17,6 +19,9 @@ export default class extends Controller {
         defaultDate: {type: String, default: null},
         rangeSeparator: {type: String, default: ' to '},
         firstDayOfWeek: {type: Number, default: 1},
+        weekSelect: {type: Boolean, default: false},
+        labels: {type: Object, default: {}},
+        rangeSelectText: {type: String, default: 'Select a range'},
     }
 
     get defaultPredefinedRanges() {
@@ -81,23 +86,19 @@ export default class extends Controller {
         const startOfLastYear = new Date(y - 1, 0, 1)
         const endOfLastYear = new Date(y - 1, 11, 31)
 
-        if ('future' === this.timeframeValue) {
-            return [
-                {id: 'today', label: 'Today', range: [startOfToday, endOfToday]},
-                {id: 'this_week', label: 'This week', range: [startOfWeek, endOfWeek]},
-                {id: 'next_week', label: 'Next week', range: [startOfNextWeek, endOfNextWeek]},
-                {id: 'next_7_days', label: 'Next 7 days', range: [now, daysFromNow(7)]},
-                {id: 'this_month', label: 'This month', range: [thisMonthStart, thisMonthEnd]},
-                {id: 'next_month', label: 'Next month', range: [startOfNextMonth, endOfNextMonth]},
-                {id: 'next_30_days', label: 'Next 30 days', range: [now, daysFromNow(30)]},
-                {id: 'next_3_months', label: 'Next 3 months', range: [startOfNextMonth, endOfThreeMonthsFromNow]},
-                {id: 'next_6_months', label: 'Next 6 months', range: [startOfNextMonth, endOfSixMonthsFromNow]},
-                {id: 'this_year', label: 'This year', range: [thisYearStart, thisYearEnd]},
-                {id: 'next_year', label: 'Next year', range: [startOfNextYear, endOfNextYear]},
-            ]
-        }
-
-        return [
+        const ranges = 'future' === this.timeframeValue ? [
+            {id: 'today', label: 'Today', range: [startOfToday, endOfToday]},
+            {id: 'this_week', label: 'This week', range: [startOfWeek, endOfWeek]},
+            {id: 'next_week', label: 'Next week', range: [startOfNextWeek, endOfNextWeek]},
+            {id: 'next_7_days', label: 'Next 7 days', range: [now, daysFromNow(7)]},
+            {id: 'this_month', label: 'This month', range: [thisMonthStart, thisMonthEnd]},
+            {id: 'next_month', label: 'Next month', range: [startOfNextMonth, endOfNextMonth]},
+            {id: 'next_30_days', label: 'Next 30 days', range: [now, daysFromNow(30)]},
+            {id: 'next_3_months', label: 'Next 3 months', range: [startOfNextMonth, endOfThreeMonthsFromNow]},
+            {id: 'next_6_months', label: 'Next 6 months', range: [startOfNextMonth, endOfSixMonthsFromNow]},
+            {id: 'this_year', label: 'This year', range: [thisYearStart, thisYearEnd]},
+            {id: 'next_year', label: 'Next year', range: [startOfNextYear, endOfNextYear]},
+        ] : [
             {id: 'today', label: 'Today', range: [startOfToday, endOfToday]},
             {id: 'yesterday', label: 'Yesterday', range: [startOfYesterday, endOfYesterday]},
             {id: 'this_week', label: 'This week', range: [startOfWeek, endOfWeek]},
@@ -111,6 +112,8 @@ export default class extends Controller {
             {id: 'this_year', label: 'This year', range: [thisYearStart, thisYearEnd]},
             {id: 'last_year', label: 'Last year', range: [startOfLastYear, endOfLastYear]},
         ]
+
+        return ranges.map(range => ({...range, label: this.labelsValue[range.id] ?? range.label}))
     }
 
     connect() {
@@ -148,12 +151,20 @@ export default class extends Controller {
             const m = +instance.minuteElement?.value
             if (h > 23 || h < 0 || m > 59 || m < 0) return
             const d = instance.selectedDates[0]
+            if (!d) return
             d.setHours(h, m)
             instance.input.value = instance.formatDate(d, instance.config.dateFormat)
             instance.input.dispatchEvent(new Event('change', { bubbles: true }))
         }
         instance.hourElement?.addEventListener('input', sync)
         instance.minuteElement?.addEventListener('input', sync)
+    }
+
+    escape(text) {
+        const element = document.createElement('span')
+        element.textContent = text
+
+        return element.innerHTML
     }
 
     generateRangeButtonsHtml(ranges) {
@@ -163,13 +174,13 @@ export default class extends Controller {
         if (isMobile) {
            const options = ranges.map(({range, label}) => {
                 const data = range.map(d => d instanceof Date ? d.toISOString() : d).join(',')
-                return `<option value="${data}">${label}</option>`
+                return `<option value="${data}">${this.escape(label)}</option>`
             }).join('')
 
             return `
                  <div class="flatpickr-predefined-ranges">
                     <select data-range-select>
-                        <option>Select a range</option>
+                        <option>${this.escape(this.rangeSelectTextValue)}</option>
                         ${options}
                     </select>
                 </div>
@@ -180,7 +191,7 @@ export default class extends Controller {
             const data = range.map(d => d instanceof Date ? d.toISOString() : d).join(',')
             return `
                  <button type="button" data-range="${data}">
-                    ${label}
+                    ${this.escape(label)}
                 </button>
             `
         }).join('')
@@ -270,7 +281,7 @@ export default class extends Controller {
 
         const ranges = this.resolvedPredefinedRanges()
         const effectiveMode = ranges.length ? 'range' : this.modeValue
-        const plugins = [];
+        const plugins = this.weekSelectValue ? [weekSelect()] : []
 
         this.fp = flatpickr(this.element, {
             time_24hr: true,
@@ -282,9 +293,10 @@ export default class extends Controller {
             dateFormat: this.dateFormatValue,
             defaultDate: this.defaultDateValue,
             enableTime: this.enableTimeValue,
+            noCalendar: this.timeOnlyValue,
             minDate: this.resolveBound(this.minDateValue, this.minDateTodayValue),
             maxDate: this.resolveBound(this.maxDateValue, this.maxDateTodayValue),
-            mode: effectiveMode,
+            mode: this.weekSelectValue ? 'range' : effectiveMode,
             plugins,
             onOpen: this.onOpen,
             onChange: this.onChange,

@@ -94,6 +94,39 @@ on a dark background.
      data-chart-dark-grid-color-value="#4b5563">
 ```
 
+### `flatpickr`
+
+`flatpickr` turns a text input into a [flatpickr](https://flatpickr.js.org)
+date picker, optionally with a list of predefined ranges next to the calendar
+(a select on narrow screens). `flatpickr` is a peer dependency.
+
+#### Values
+
+| Value                     | Default          | Purpose                                                                                                   |
+|---------------------------|------------------|-----------------------------------------------------------------------------------------------------------|
+| `date-format`             | `d-m-Y`          | flatpickr date format                                                                                     |
+| `enable-time`             | `false`          | Adds the time picker                                                                                      |
+| `time-only`               | `false`          | Only the time picker, without the calendar                                                                |
+| `min-date-today`          | `false`          | No dates before today                                                                                     |
+| `max-date-today`          | `false`          | No dates after today                                                                                      |
+| `min-date`, `max-date`    | `''`             | Bounds as `Y-m-d`; win over the two values above                                                          |
+| `mode`                    | `single`         | `single` or `range`. Predefined ranges and `week-select` always use `range`                               |
+| `enable-predefined-ranges` | `false`         | Shows every range of the timeframe                                                                        |
+| `predefined-ranges`       | `[]`             | The ids of the ranges to show, as JSON, e.g. `["this_week", "last_week"]`                                 |
+| `timeframe`               | `past`           | `past` (`yesterday`, `last_week` …) or `future` (`next_week`, `next_7_days` …)                            |
+| `default-date`            | `null`           | Date to start with                                                                                        |
+| `range-separator`         | ` to `           | Between the two dates of a range                                                                          |
+| `first-day-of-week`       | `1`              | `0` is Sunday                                                                                             |
+| `week-select`             | `false`          | Selects a whole week, with flatpickr's weekSelect plugin                                                  |
+| `labels`                  | `{}`             | Range labels by id, as JSON, e.g. `{"today": "Vandaag"}`. A range without one keeps its English label     |
+| `range-select-text`       | `Select a range` | First option of the range select on narrow screens                                                        |
+
+The labels and the range select text are always set as text, never as HTML.
+`tbd/core-bundle` fills `labels` and `range-select-text` with translations on
+every form field with predefined ranges. A new range also gets its id in
+`DateService::RANGES` and its period in `DateService::period()` of
+`tbd/core-bundle`; until then it shows its English label.
+
 ### `map`
 
 `map` renders a [Leaflet](https://leafletjs.com) map with markers. It is
