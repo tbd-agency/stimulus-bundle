@@ -100,7 +100,10 @@ export default class extends Controller {
 
     addRemoteSettings(settings) {
         settings.plugins.push('virtual_scroll')
-        settings.loadThrottle = this.loadThrottleValue
+        // Only typing waits, refreshThrottle already holds back the load until the last keystroke; loadThrottle would also delay
+        // the first page on focus and the next page on scroll
+        settings.refreshThrottle = this.loadThrottleValue
+        settings.loadThrottle = null
         settings.firstUrl = (query) => {
             const url = new URL(this.tomSelectUrlValue, window.location.href)
             url.searchParams.set('page', '1')
@@ -122,6 +125,8 @@ export default class extends Controller {
 
     load(query, callback) {
         const tomSelect = this.tomSelect
+        // Tom Select only marks a query as loaded in its loadThrottle, which keeps it from loading the first page again
+        tomSelect.loadedSearches[query] = true
         // getUrl() hands out the next page of a query that was loaded before, so it has to be read once, before fetching
         const url = tomSelect.getUrl(query)
 
