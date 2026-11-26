@@ -12,7 +12,12 @@ export default class extends Controller {
         minZoom: {type: Number, default: 2},
         maxZoom: {type: Number, default: 18},
         fitMaxZoom: {type: Number, default: 16},
+        fitMarkers: {type: Boolean, default: true},
+        locateZoom: {type: Number, default: 0},
         tileUrl: {type: String, default: 'https://tiles.stadiamaps.com/tiles/outdoors/{z}/{x}/{y}{r}.png'},
+        styleUrl: String,
+        darkStyleUrl: String,
+        workerUrl: {type: String, default: '/build/maplibre-gl/maplibre-gl-worker.mjs'},
         attribution: {type: String, default: '© Stadia Maps © OpenMapTiles © OpenStreetMap'},
         markerClick: {type: String, default: 'visit'}, // 'visit' | 'popup' | 'none'
     }
@@ -25,18 +30,84 @@ export default class extends Controller {
         })
         this.map.attributionControl.setPrefix(false)
 
-        leaflet.tileLayer(this.tileUrlValue, {
-            attribution: this.attribution(),
-            maxZoom: this.maxZoomValue,
-        }).addTo(this.map)
+        if (this.hasStyleUrlValue) {
+            this.addVectorLayer()
+        } else {
+            this.tileLayer().addTo(this.map)
+        }
 
         this.layers = leaflet.layerGroup().addTo(this.map)
         this.markersValueChanged()
+
+        if (this.locateZoomValue > 0) {
+            this.locate()
+        }
     }
 
     disconnect() {
+        if (this.boundThemeChanged) {
+            document.removeEventListener('theme:changed', this.boundThemeChanged)
+        }
+
         this.map?.remove()
         this.map = null
+    }
+
+    // Asks the browser for the viewer's position; when it is refused or unknown, the map keeps fitting the markers
+    locate() {
+        this.map.on('locationfound', event => {
+            this.userLocation = event.latlng
+            this.fit()
+        })
+        this.map.locate({setView: false})
+    }
+
+    // Without a style: raster tiles from tile-url, Stadia Maps "outdoors" by default
+    tileLayer() {
+        return leaflet.tileLayer(this.tileUrlValue, {
+            attribution: this.attribution(),
+            maxZoom: this.maxZoomValue,
+        })
+    }
+
+    // With a style: a MapLibre vector map under the Leaflet markers. MapLibre is only downloaded by maps that use it
+    async addVectorLayer() {
+        const [{setWorkerUrl}, {maplibreGL}] = await Promise.all([
+            import('maplibre-gl'),
+            import('@maplibre/maplibre-gl-leaflet'),
+            import('maplibre-gl/dist/maplibre-gl.css'),
+        ])
+        if (!this.map) return
+
+        // A bundler moves MapLibre away from its worker file, so the project serves that file, by default under /build
+        setWorkerUrl(new URL(this.workerUrlValue, document.baseURI).href)
+
+        // No label fade: a theme swap repaints the map in one go, like the rest of the page
+        this.vectorLayer = maplibreGL({
+            style: this.styleUrl(),
+            fadeDuration: 0,
+            attributionControl: {customAttribution: this.attribution()},
+        })
+        this.vectorLayer.addTo(this.map)
+
+        if (this.hasDarkStyleUrlValue) {
+            this.boundThemeChanged = this.themeChanged.bind(this)
+            document.addEventListener('theme:changed', this.boundThemeChanged)
+        }
+    }
+
+    // The theme controller toggles .dark on <html> and dispatches theme:changed
+    themeChanged() {
+        this.vectorLayer?.getMaplibreMap()?.setStyle(this.styleUrl())
+    }
+
+    styleUrl() {
+        let url = this.styleUrlValue
+        if (this.hasDarkStyleUrlValue && document.documentElement.classList.contains('dark')) {
+            url = this.darkStyleUrlValue
+        }
+
+        return new URL(url, document.baseURI).href
     }
 
     // Stimulus also calls this before connect(), when there is no map yet
@@ -61,8 +132,14 @@ export default class extends Controller {
     }
 
     fit() {
+        if (this.userLocation) {
+            this.map.setView(this.userLocation, this.locateZoomValue)
+
+            return
+        }
+
         const markers = this.validMarkers
-        if (markers.length) {
+        if (markers.length && this.fitMarkersValue) {
             this.map.fitBounds(markers.map(marker => [marker.lat, marker.lng]), {maxZoom: this.fitMaxZoomValue})
         } else {
             this.map.setView(this.centerValue, this.zoomValue)

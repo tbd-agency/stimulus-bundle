@@ -186,7 +186,9 @@
       "flatpickr": "^4.6.13",
       "leaflet": "^1.9.4",
       "sortablejs": "^1.15.0",
-      "@symfony/ux-live-component": "^2.0.0 || ^3.0.0"
+      "@symfony/ux-live-component": "^2.0.0 || ^3.0.0",
+      "maplibre-gl": "^5.0.0 || ^6.0.0",
+      "@maplibre/maplibre-gl-leaflet": "^0.1.0"
     }
   },
   "dependencies": {
@@ -201,7 +203,9 @@
     "leaflet": "^1.9.4",
     "sortablejs": "^1.15.0",
     "tinymce": "^7.0.0 || ^8.0.0",
-    "@symfony/ux-live-component": "^2.0.0 || ^3.0.0"
+    "@symfony/ux-live-component": "^2.0.0 || ^3.0.0",
+    "maplibre-gl": "^5.0.0 || ^6.0.0",
+    "@maplibre/maplibre-gl-leaflet": "^0.1.0"
   },
   "peerDependencies": {
     "@hotwired/stimulus": "^3.2.2",
@@ -215,6 +219,8 @@
     "leaflet": "^1.9.4",
     "sortablejs": "^1.15.0",
     "tinymce": "^7.0.0 || ^8.0.0",
-    "@symfony/ux-live-component": "^2.0.0 || ^3.0.0"
+    "@symfony/ux-live-component": "^2.0.0 || ^3.0.0",
+    "maplibre-gl": "^5.0.0 || ^6.0.0",
+    "@maplibre/maplibre-gl-leaflet": "^0.1.0"
   }
 }

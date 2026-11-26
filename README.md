@@ -166,12 +166,17 @@ registers its own `assets/controllers/map_controller.js` under the same name.
 | Value          | Default                                       | Purpose                                                                                     |
 |----------------|-----------------------------------------------|---------------------------------------------------------------------------------------------|
 | `markers`      | `[]`                                          | The markers, see below                                                                      |
-| `center`       | `[50.8387917, 4.3630185]` (Brussels)          | `[lat, lng]` shown when there are no markers                                                |
+| `center`       | `[50.8387917, 4.3630185]` (Brussels)          | `[lat, lng]` shown when there are no markers, or always with `fit-markers` off              |
 | `zoom`         | `16`                                          | Zoom level used with `center`                                                               |
 | `fit-max-zoom` | `16`                                          | Highest zoom level when the map fits itself to the markers, e.g. for a single marker        |
+| `fit-markers`  | `true`                                        | `false`: always opens on `center` at `zoom`, also when there are markers                    |
+| `locate-zoom` | `0`                                           | Above 0: asks the browser for the viewer's position and opens there at this zoom level. Refused or unknown: fits the markers as usual |
 | `min-zoom`     | `2`                                           |                                                                                             |
 | `max-zoom`     | `18`                                          | Also the tile layer's maximum; lower it for tile servers that stop earlier                  |
 | `tile-url`     | Stadia Maps "outdoors"                        | Leaflet tile URL template. Stadia needs the domain or an API key registered with them       |
+| `style-url`    |                                               | URL of a MapLibre style. When set, the map is a vector map from this style and `tile-url` is not used. See below |
+| `dark-style-url` |                                             | Style used while `<html>` has the `dark` class; the map swaps on `theme:changed`            |
+| `worker-url`   | `/build/maplibre-gl/maplibre-gl-worker.mjs`   | URL of MapLibre's worker, only used with `style-url`. See below                             |
 | `attribution`  | `© Stadia Maps © OpenMapTiles © OpenStreetMap` | Plain text, never HTML. For links, use an `attribution` template instead                    |
 | `marker-click` | `visit`                                       | `visit`, `popup` or `none`, see below                                                       |
 
@@ -209,6 +214,47 @@ event with the marker in `event.detail.marker`, then acts on `marker-click`:
 tab), `popup` only opens the popup, `none` leaves it to the event. Calling
 `event.preventDefault()` in a `data-action="map:marker-click->…"` handler stops
 the visit.
+
+Without `style-url` the map shows raster tiles from `tile-url`, Stadia Maps
+"outdoors" by default. With `style-url` it draws a
+[MapLibre](https://maplibre.org) vector map from that
+[style](https://maplibre.org/maplibre-style-spec/), so a project can colour
+the map itself; markers and popups stay Leaflet. MapLibre, its Leaflet plugin
+and its stylesheet are loaded only by maps that have a `style-url`. They are
+dependencies of this bundle, so a project does not install them itself.
+
+A style is usually a copy of a provider's style, e.g. Stadia Maps' Alidade
+Smooth (`https://tiles.stadiamaps.com/styles/alidade_smooth.json`), with its
+colours changed, edited by hand or in [Maputnik](https://maplibre.org/maputnik/).
+Its tiles, fonts and sprites stay on the provider, so the provider's domain or
+API key rules still apply, and a Content Security Policy needs the provider in
+`connect-src` and `'self'` in `worker-src`. Set `"transition": {"duration": 0}`
+in the style to make a `dark-style-url` swap instant.
+
+MapLibre looks for its worker next to its own module, which a bundler
+breaks, and a bundler cannot copy the worker for it: the worker loads
+`maplibre-gl-shared.mjs` by that exact name. So the project serves
+`maplibre-gl-worker.mjs` and `maplibre-gl-shared.mjs` from one folder, without
+hashes in their names. `worker-url` expects them in `/build/maplibre-gl/`,
+which this Encore setting gives; set `worker-url` only when they live
+elsewhere:
+
+```js
+.copyFiles({
+    from: 'node_modules/maplibre-gl/dist',
+    to: 'maplibre-gl/[name].[ext]',
+    pattern: /maplibre-gl-(worker|shared)\.mjs$/,
+})
+```
+
+```twig
+<div class="h-[30vh]"
+     data-controller="map"
+     data-map-style-url-value="/map/style.json"
+     data-map-dark-style-url-value="/map/style-dark.json"
+     data-map-markers-value="{{ markers|json_encode }}">
+</div>
+```
 
 A map that was hidden while it connected has the wrong size. Call
 `invalidateSize` after showing it: as an action on the event that shows it, or
